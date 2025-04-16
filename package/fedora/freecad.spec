@@ -25,7 +25,7 @@
 
 # Some plugins go in the Mod folder instead of lib. Deal with those here:
 %global mod_plugins Mod/PartDesign
-%define name freecad
+%define name freecad-git
 %define github_name FreeCAD
 %define branch main
 
