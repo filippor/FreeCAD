@@ -6,7 +6,7 @@
 %global py_suffix %(%{__python3} -c "import sysconfig; print(sysconfig.get_config_var('SOABI'))")
 
 # Maintainers:  keep this list of plugins up to date
-# List plugins in %%{_libdir}/%{name}/lib, less '.so' and 'Gui.so', here
+# List plugins in %%{_libdir}/%%{name}/lib, less '.so' and 'Gui.so', here
 %global plugins AssemblyApp AssemblyGui CAMSimulator DraftUtils Fem FreeCAD Import Inspection MatGui Materials Measure Mesh MeshPart Part PartDesignGui Path PathApp PathSimulator Points QtUnitGui ReverseEngineering Robot Sketcher Spreadsheet Start Surface TechDraw Web _PartDesign area flatmesh libDriver libDriverDAT libDriverSTL libDriverUNV libE57Format libMEFISTO2 libOndselSolver libSMDS libSMESH libSMESHDS libStdMeshers libarea-native
 
 # Some configuration options for other environments
@@ -25,20 +25,25 @@
 
 # Some plugins go in the Mod folder instead of lib. Deal with those here:
 %global mod_plugins Mod/PartDesign
-%define name freecad
-%define github_name FreeCAD
-%define branch main
 
-Name:           %{name}
+
+Name:           {{{ git_repo_name}}}
 Epoch:          1
-Version:        1.1.0
-Release:        pre_{{{git_commit_no}}}%{?dist}
+Version:        {{{ git_repo_release_branched }}}
+# the format for this macro is  ${branch}.${follow}${commit_count_appendix}${dirty_appendix} example main.0.git.41272.bb808{e5d.dirty.2434ql
+#a macro is defined (git_commit_no) ti get the commit count in FreeCAD way
+#default srpm macro is { git_version lead=1 follow=1 }  version like 1.0.git.41269.477c0421.dirty.243ve9
+#the automatic behavior to manage tag expect tag in the format N-V-R form (N-V-R stands for the Name-Version-Release rpm triplet) example FreeCAD-1.1.git.41291-1
+#using tag in this format will generate automatically the changelog and the correct version without specifiing lead and follow
+Release:        1%{?dist}
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
 
 License:        LGPLv2+
 URL:            https://www.freecad.org/
-Source0:        {{{git_repo_pack_with_submodules}}}
+VCS:            {{{ git_repo_vcs }}}
+
+Source0:        {{{ git_repo_pack_with_submodules }}}
 
 
 # Utilities
@@ -162,7 +167,7 @@ Data files for FreeCAD
 
 
 %prep
-%autosetup -p1 -n FreeCAD
+{{{ git_repo_setup_macro }}}
 # Remove bundled pycxx if we're not using it
 %if ! %{bundled_pycxx}
 rm -rf src/CXX
@@ -351,5 +356,6 @@ fi
 %{_docdir}/%{name}/ThirdPartyLibraries.html
 
 %changelog
+{{{ git_repo_changelog }}}
 * Mon Mar 10 2025 Leif-Jöran Olsson <info@friprogramvarusyndikatet.se> - 1.1.0-1
 - Adding support for building with Qt6 and PySide6 for Fedora 40+
