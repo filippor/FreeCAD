@@ -39,7 +39,7 @@ Version:        {{{ git_repo_version lead=1.1 follow="~" }}}
 #default srpm macro is { git_version lead=1 follow=1 }  version like 1.1.git.41269.477c0421.dirty.243ve9
 #the automatic behavior to manage tag expect tag in the format N-V-R form (N-V-R stands for the Name-Version-Release rpm triplet) example FreeCAD-1.1.git.41291-1
 #using tag in this format will generate automatically the changelog and the correct version without specifiing lead and follow
-Release:        1%{?dist}
+Release:        %autorelease
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
 
@@ -175,6 +175,8 @@ Data files for FreeCAD
 
 #path that contain main FreeCAD sources
 %global _vpath_srcdir  %{_builddir}/{{{ git_repo_name  }}}
+#build path for cmake
+%global _vpath_builddir  %{_builddir}/%{_vpath_builddir}
 %prep
 {{{ git_repo_setup_macro }}}
 # Remove bundled pycxx if we're not using it
@@ -195,22 +197,19 @@ rm -rf src/zipios++
            mv * %{_vpath_srcdir}/src/3rdParty/GSL/
 {{{ git_setup_macro  path=$GIT_ROOT/src/Mod/AddonManager/      source_indices=3  }}}
            mv * %{_vpath_srcdir}/src/Mod/AddonManager/
+%if ! %{with_test}
 {{{ git_setup_macro  path=$GIT_ROOT/tests/lib/                 source_indices=4  }}}
            mv * %{_vpath_srcdir}/tests/lib/
-
-cd %{_vpath_srcdir}
-
+%endif
 
 %build
-# Deal with cmake projects that tend to link excessively.
-CXXFLAGS='-Wno-error=cast-function-type'; export CXXFLAGS
-LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
-
 %cmake \
        -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
        -DCMAKE_INSTALL_DATADIR=%{_datadir}/%{name} \
        -DCMAKE_INSTALL_DOCDIR=%{_docdir}/%{name} \
        -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir} \
+       -DCMAKE_INSTALL_DATAROOTDIR=%{_datadir} \
+       -DCMAKE_INSTALL_DATADIR=%{_datadir}/%{name} \
        -DRESOURCEDIR=%{_datadir}/%{name} \
        -DFREECAD_USE_EXTERNAL_PIVY=TRUE \
        -DFREECAD_USE_EXTERNAL_FMT=TRUE \
@@ -259,37 +258,6 @@ mkdir -p %{buildroot}%{_bindir}
 ln -s ../%{_lib}/%{name}/bin/FreeCAD %{buildroot}%{_bindir}/FreeCAD
 ln -s ../%{_lib}/%{name}/bin/FreeCADCmd %{buildroot}%{_bindir}/FreeCADCmd
 
-mkdir %{buildroot}%{_metainfodir}/
-mv %{buildroot}%{_libdir}/%{name}/share/metainfo/* %{buildroot}%{_metainfodir}/
-
-mkdir %{buildroot}%{_datadir}/applications/
-mv %{buildroot}%{_libdir}/%{name}/share/applications/* %{buildroot}%{_datadir}/applications/
-
-
-mkdir -p %{buildroot}%{_datadir}/thumbnailers/
-mv %{buildroot}%{_libdir}/%{name}/share/thumbnailers/* %{buildroot}%{_datadir}/thumbnailers/
-
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/
-mv %{buildroot}%{_libdir}/%{name}/share/icons/hicolor/scalable/* %{buildroot}%{_datadir}/icons/hicolor/scalable/
-
-mkdir -p %{buildroot}%{_datadir}/pixmaps/
-mv %{buildroot}%{_libdir}/%{name}/share/pixmaps/* %{buildroot}%{_datadir}/pixmaps/
-
-mkdir -p %{buildroot}%{_datadir}/mime/packages/
-mv %{buildroot}%{_libdir}/%{name}/share/mime/packages/* %{buildroot}%{_datadir}/mime/packages/
-
-pushd %{buildroot}%{_libdir}/%{name}/share/
-rmdir metainfo/
-rmdir applications/
-rm -rf mime
-rm -rf icons
-popd
-
-# Remove obsolete Start_Page.html
-rm -f %{buildroot}%{_docdir}/%{name}/Start_Page.html
-`
-# Remove header from external library that's erroneously installed
-rm -f %{buildroot}%{_libdir}/%{name}/include/E57Format/E57Export.h
 
 rm -rf %{buildroot}%{_includedir}/OndselSolver/*
 rm -f %{buildroot}%{_libdir}/%{name}/share/pkgconfig/OndselSolver.pc
@@ -323,12 +291,14 @@ done
 
 
 %check
-cd %{_vpath_srcdir}
 desktop-file-validate \
     %{buildroot}%{_datadir}/applications/org.freecad.FreeCAD.desktop
 %{?fedora:appstream-util validate-relax --nonet \
     %{buildroot}%{_metainfodir}/*.metainfo.xml}
 
+%if ! %{with_test}
+    %{ctest}
+%endif
 
 
 %post
