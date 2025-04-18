@@ -17,8 +17,6 @@
 # rpmbuild --without=bundled_smesh:  don't use bundled version of Salome's Mesh
 %global bundled_smesh %{?_without_bundled_smesh: 0} %{?!_without_bundled_smesh: 1}
 
-# Prevent RPM from doing its magical 'build' directory for now
-%global __cmake_in_source_build 0
 
 # See FreeCAD-main/src/3rdParty/salomesmesh/CMakeLists.txt to find this out.
 %global bundled_smesh_version 7.7.1.0
@@ -27,12 +25,12 @@
 %global mod_plugins Mod/PartDesign
 
 
-Name:           {{{ git_repo_name}}}
-Epoch:          1
-Version:        {{{ git_repo_release_branched }}}
+Name:           {{{ git_repo_name  }}}
+Epoch:          2
+Version:        {{{ git_version lead=1 follow=1 }}}
 # the format for this macro is  ${branch}.${follow}${commit_count_appendix}${dirty_appendix} example main.0.git.41272.bb808{e5d.dirty.2434ql
-#a macro is defined (git_commit_no) ti get the commit count in FreeCAD way
-#default srpm macro is { git_version lead=1 follow=1 }  version like 1.0.git.41269.477c0421.dirty.243ve9
+#a macro is defined ( git_commit_no ) ti get the commit count in FreeCAD way
+#default srpm macro is { git_version lead=1 follow=1 }  version like 1.1.git.41269.477c0421.dirty.243ve9
 #the automatic behavior to manage tag expect tag in the format N-V-R form (N-V-R stands for the Name-Version-Release rpm triplet) example FreeCAD-1.1.git.41291-1
 #using tag in this format will generate automatically the changelog and the correct version without specifiing lead and follow
 Release:        1%{?dist}
@@ -43,7 +41,12 @@ License:        LGPLv2+
 URL:            https://www.freecad.org/
 VCS:            {{{ git_repo_vcs }}}
 
-Source0:        {{{ git_repo_pack_with_submodules }}}
+Source0:        {{{ git_repo_pack }}}
+#add all submodule as source
+Source1:        {{{ git_pack    path=$GIT_ROOT/src/3rdParty/OndselSolver/   }}}
+Source2:        {{{ git_pack    path=$GIT_ROOT/src/3rdParty/GSL/            }}}
+Source3:        {{{ git_pack    path=$GIT_ROOT/src/Mod/AddonManager/        }}}
+Source4:        {{{ git_pack    path=$GIT_ROOT/tests/lib/                   }}}
 
 
 # Utilities
@@ -135,7 +138,6 @@ Provides:       bundled(python-pycxx)
 Recommends:     python3-pysolar
 
 
-
 # plugins and private shared libs in %%{_libdir}/freecad/lib are private;
 # prevent private capabilities being advertised in Provides/Requires
 %define plugin_regexp /^\\\(libFreeCAD.*%(for i in %{plugins}; do echo -n "\\\|$i\\\|$iGui"; done)\\\)\\\(\\\|Gui\\\)\\.so/d
@@ -165,30 +167,38 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %description data
 Data files for FreeCAD
 
-
+#path that contain main FreeCAD sources
+%global _vpath_srcdir  %{_builddir}/{{{ git_repo_name  }}}
 %prep
 {{{ git_repo_setup_macro }}}
 # Remove bundled pycxx if we're not using it
 %if ! %{bundled_pycxx}
 rm -rf src/CXX
 %endif
-
 %if ! %{bundled_zipios}
 rm -rf src/zipios++
 #sed -i "s/zipios-config.h/zipios-config.hpp/g" \
 #    src/Base/Reader.cpp src/Base/Writer.h
 %endif
-
 # Removed bundled libraries
 
-%build
-rm -rf build && mkdir build && cd build
+# extract submodule archive and move in correct path
+{{{ git_setup_macro  path=$GIT_ROOT/src/3rdParty/OndselSolver/ source_indices=1  }}}
+           mv * %{_vpath_srcdir}/src/3rdParty/OndselSolver/
+{{{ git_setup_macro  path=$GIT_ROOT/src/3rdParty/GSL/          source_indices=2  }}}
+           mv * %{_vpath_srcdir}/src/3rdParty/GSL/
+{{{ git_setup_macro  path=$GIT_ROOT/src/Mod/AddonManager/      source_indices=3  }}}
+           mv * %{_vpath_srcdir}/src/Mod/AddonManager/
+{{{ git_setup_macro  path=$GIT_ROOT/tests/lib/                 source_indices=4  }}}
+           mv * %{_vpath_srcdir}/tests/lib/
 
+cd %{_vpath_srcdir}
+
+
+%build
 # Deal with cmake projects that tend to link excessively.
 CXXFLAGS='-Wno-error=cast-function-type'; export CXXFLAGS
 LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
-
-%define MEDFILE_INCLUDE_DIRS %{_includedir}/med/
 
 %cmake \
        -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
@@ -203,10 +213,10 @@ LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
        -DSHIBOKEN_INCLUDE_DIR=%{_includedir}/shiboken6 \
        -DSHIBOKEN_LIBRARY=-lshiboken6.%{py_suffix} \
        -DPYTHON_SUFFIX=.%{py_suffix} \
-       -DPYSIDE_INCLUDE_DIR=/usr/include/PySide6 \
+       -DPYSIDE_INCLUDE_DIR=%{_includedir}/PySide6 \
        -DPYSIDE_LIBRARY=-lpyside6.%{py_suffix} \
-       -DPython3_EXECUTABLE:FILEPATH=/usr/bin/python3 \
-       -DMEDFILE_INCLUDE_DIRS=%{MEDFILE_INCLUDE_DIRS} \
+       -DPython3_EXECUTABLE:FILEPATH=%{__python3} \
+       -DMEDFILE_INCLUDE_DIRS=%{_includedir}/med \
        -DOpenGL_GL_PREFERENCE=GLVND \
        -DCOIN3D_INCLUDE_DIR=%{_includedir}/Coin4 \
        -DCOIN3D_DOC_PATH=%{_datadir}/Coin4/Coin \
@@ -215,7 +225,6 @@ LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
        -DFREECAD_USE_EXTERNAL_SMESH=TRUE \
        -DSMESH_FOUND=TRUE \
        -DSMESH_INCLUDE_DIR=%{_includedir}/smesh \
-       -DSMESH_DIR=`pwd`/../cMake \
 %endif
 %if ! %{bundled_zipios}
        -DFREECAD_USE_EXTERNAL_ZIPIOS=TRUE \
@@ -224,23 +233,16 @@ LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
        -DPYCXX_INCLUDE_DIR=$(pkg-config --variable=includedir PyCXX) \
        -DPYCXX_SOURCE_DIR=$(pkg-config --variable=srcdir PyCXX) \
 %endif
-       -DPACKAGE_WCREF="%{release} (Git)" \
-       -DPACKAGE_WCURL="git://github.com/%{github_name}/FreeCAD.git main" \
+       -DPACKAGE_WCREF="{{{ git_repo_release_branched }}}" \
+       -DPACKAGE_WCURL="{{{ git_repo_vcs }}}"\
        -DENABLE_DEVELOPER_TESTS=FALSE \
        -DBUILD_GUI=TRUE \
-       ../
 
-make fc_version
-for I in src/Build/Version.h src/Build/Version.h.out; do
-	sed -i 's,FCRevision      \"Unknown\",FCRevision      \"%{release} (Git)\",' $I
-	sed -i 's,FCRepositoryURL \"Unknown\",FCRepositoryURL \"git://github.com/FreeCAD/FreeCAD.git main\",' $I
-done
 
-%{make_build}
+%cmake_build
 
 %install
-cd build
-%make_install
+%cmake_install
 
 # Symlink binaries to /usr/bin
 mkdir -p %{buildroot}%{_bindir}
@@ -275,7 +277,7 @@ popd
 
 # Remove obsolete Start_Page.html
 rm -f %{buildroot}%{_docdir}/%{name}/Start_Page.html
-
+`
 # Remove header from external library that's erroneously installed
 rm -f %{buildroot}%{_libdir}/%{name}/include/E57Format/E57Export.h
 
@@ -311,10 +313,12 @@ done
 
 
 %check
+cd %{_vpath_srcdir}
 desktop-file-validate \
     %{buildroot}%{_datadir}/applications/org.freecad.FreeCAD.desktop
 %{?fedora:appstream-util validate-relax --nonet \
     %{buildroot}%{_metainfodir}/*.metainfo.xml}
+
 
 
 %post
