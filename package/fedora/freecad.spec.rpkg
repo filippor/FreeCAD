@@ -5,9 +5,7 @@
 # Setup python target for shiboken so the right cmake file is imported.
 %global py_suffix %(%{__python3} -c "import sysconfig; print(sysconfig.get_config_var('SOABI'))")
 
-# Maintainers:  keep this list of plugins up to date
-# List plugins in %%{_libdir}/%%{name}/lib, less '.so' and 'Gui.so', here
-%global plugins AssemblyApp AssemblyGui CAMSimulator DraftUtils Fem FreeCAD Import Inspection MatGui Materials Measure Mesh MeshPart Part PartDesignGui Path PathApp PathSimulator Points QtUnitGui ReverseEngineering Robot Sketcher Spreadsheet Start Surface TechDraw Web _PartDesign area flatmesh libDriver libDriverDAT libDriverSTL libDriverUNV libE57Format libMEFISTO2 libOndselSolver libSMDS libSMESH libSMESHDS libStdMeshers libarea-native
+
 
 # Some configuration options for other environments
 # rpmbuild --with=bundled_zipios:  use bundled version of zipios++
@@ -16,7 +14,15 @@
 %global bundled_pycxx %{?_with_bundled_pycxx: 1} %{?!_with_bundled_pycxx: 0}
 # rpmbuild --without=bundled_smesh:  don't use bundled version of Salome's Mesh
 %global bundled_smesh %{?_without_bundled_smesh: 0} %{?!_without_bundled_smesh: 1}
+#with tests
+%global with_test %{?_without_tests: 0} %{?!_without_tests: 1}
 
+# Maintainers:  keep this list of plugins up to date
+# List plugins in %%{_libdir}/%%{name}/lib, less '.so' and 'Gui.so', here
+%global plugins AssemblyApp AssemblyGui CAMSimulator DraftUtils Fem FreeCAD Import Inspection MatGui Materials Measure Mesh MeshPart Part PartDesignGui Path PathApp PathSimulator Points QtUnitGui ReverseEngineering Robot Sketcher Spreadsheet Start Surface TechDraw Web _PartDesign area flatmesh libDriver libDriverDAT libDriverSTL libDriverUNV libE57Format libMEFISTO2 libOndselSolver libSMDS libSMESH libSMESHDS libStdMeshers libarea-native
+%if ! %{with_test}
+%global plugins %{plugins} libgmock libgmock_main  libgtest libgtest_main
+%endif
 
 # See FreeCAD-main/src/3rdParty/salomesmesh/CMakeLists.txt to find this out.
 %global bundled_smesh_version 7.7.1.0
@@ -25,9 +31,9 @@
 %global mod_plugins Mod/PartDesign
 
 
-Name:           {{{ git_repo_name  }}}
+Name:           freecad
 Epoch:          2
-Version:        {{{ git_version lead=1 follow=1 }}}
+Version:        {{{ git_repo_version lead=1.1 follow="~" }}}
 # the format for this macro is  ${branch}.${follow}${commit_count_appendix}${dirty_appendix} example main.0.git.41272.bb808{e5d.dirty.2434ql
 #a macro is defined ( git_commit_no ) ti get the commit count in FreeCAD way
 #default srpm macro is { git_version lead=1 follow=1 }  version like 1.1.git.41269.477c0421.dirty.243ve9
@@ -37,7 +43,7 @@ Release:        1%{?dist}
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
 
-License:        LGPLv2+
+License:        GPL-2.0-or-later
 URL:            https://www.freecad.org/
 VCS:            {{{ git_repo_vcs }}}
 
@@ -154,7 +160,7 @@ Recommends:     python3-pysolar
 FreeCAD is a general purpose Open Source 3D CAD/MCAD/CAx/CAE/PLM modeler, aimed
 directly at mechanical engineering and product design but also fits a wider
 range of uses in engineering, such as architecture or other engineering
-specialities. It is a feature-based parametric modeler with a modular software
+specialties It is a feature-based parametric modeler with a modular software
 architecture which makes it easy to provide additional functionality without
 modifying the core system.
 
@@ -235,7 +241,11 @@ LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
 %endif
        -DPACKAGE_WCREF="{{{ git_repo_release_branched }}}" \
        -DPACKAGE_WCURL="{{{ git_repo_vcs }}}"\
+%if ! %{with_test}
+       -DENABLE_DEVELOPER_TESTS=TRUE \
+%else
        -DENABLE_DEVELOPER_TESTS=FALSE \
+%endif
        -DBUILD_GUI=TRUE \
 
 
@@ -344,7 +354,7 @@ fi
 %{_metainfodir}/*
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/bin/
-%{_libdir}/%{name}/%{_lib}/
+%{_libdir}/%{name}/%{_lib}/g
 %{_libdir}/%{name}/Ext/
 %{_libdir}/%{name}/Mod/
 %{_datadir}/applications/*
