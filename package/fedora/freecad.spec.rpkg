@@ -324,7 +324,7 @@ fi
 %{_metainfodir}/*
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/bin/
-%{_libdir}/%{name}/%{_lib}/g
+%{_libdir}/%{name}/%{_lib}/
 %{_libdir}/%{name}/Ext/
 %{_libdir}/%{name}/Mod/
 %{_datadir}/applications/*
