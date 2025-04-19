@@ -25,14 +25,14 @@
 
 # Some plugins go in the Mod folder instead of lib. Deal with those here:
 %global mod_plugins Mod/PartDesign
-%define name freecad-git
+%define name freecad
 %define github_name FreeCAD
 %define branch main
 
 Name:           %{name}
 Epoch:          1
 Version:        1.1.0
-Release:        pre_{{{git_commit_no}}}%{?dist}
+Release:        pre_make_srpm{{{git_commit_no}}}%{?dist}
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
 
