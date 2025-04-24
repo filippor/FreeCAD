@@ -12,29 +12,38 @@
 %bcond_without bundled_gtest
 
 %global git_name {{{ git_name }}}
-%global wcvrev   {{{ git_repo_release_branched }}}
+%global wcvrev   {{{ git_wcrev }}}
 %global wcurl    {{{ git_repo_vcs }}}
-%global wcdate   {{{ echo -n `git log -1 --format="%at" | xargs -I{} date -d @{} +"%Y/%m/%d %T"` }}}
-Name:           freecad-git
+%global wcdate   {{{ git_wcdate }}}
+%global commit_hash {{{ git_commit_hash }}}
+#2025/04/24 20:53:36 -> 2025_04_24
+%global version_date %{lua:
+  local date = rpm.expand("%{wcdate}")
+  date = date:match("^[^%s]+")         -- remove time
+  date = date:gsub("/", "_")           -- convert slashes to dots
+  print(date)
+}
+#41380 +36 (Git) -> 41380+36
+%global version_wcvrev %{lua:
+  local rev = rpm.expand("%{wcvrev}")
+  rev = rev:gsub("%s*%b()", "")  -- remove (Git)
+  rev = rev:gsub("%s+", "")      -- remove spaces
+  print(rev)
+}
+%global flavor {{{ flavor }}}
+
+Name:           freecad-%{flavor}
 
 Epoch:          1
 Version:        1.1.0~dev
-Release:        %{wcvrev}%{autorelease}
+Release:        %{flavor}.%{version_date}.%{version_wcvrev}%{autorelease}
 
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
 License:        GPL-2.0-or-later
 URL:            https://www.freecad.org/
 
-Source0:        {{{ git_repo_pack }}}
-#add all submodule as source
-Source1:        {{{ git_pack path=$GIT_ROOT/src/3rdParty/OndselSolver/  dir_name="OndselSolver" }}}
-Source2:        {{{ git_pack path=$GIT_ROOT/src/3rdParty/GSL/ dir_name="GSL" }}}
-Source3:        {{{ git_pack path=$GIT_ROOT/src/Mod/AddonManager/ dir_name="AddonManager" }}}
-%if %{with tests}  && %{with bundled_gtest}
-Source4:        {{{ git_pack path=$GIT_ROOT/tests/lib/ name=test-lib dir_name="lib" }}}
-%endif
-
+Source0:        {{{ git_repo_pack_with_submodules }}}
 
 %if %{with bundled_smesh}
 # See /src/3rdParty/salomesmesh/CMakeLists.txt to find this out.
@@ -119,18 +128,9 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 #path that contain main FreeCAD sources for cmake
 %global _vpath_srcdir  %_builddir/%{git_name}
-%global tests_resultdir %{_datadir}/%{name}/%{_arch}/tests_result
+%global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
 %prep
-    rm -rf %{git_name}
-
-    # extract submodule archive and move in correct path
-    %setup -T -a 1 -q -c -D -n %{git_name}/src/3rdParty/ #OndselSolver
-    %setup -T -a 2 -q -c -D -n %{git_name}/src/3rdParty/ #GSL
-    %setup -T -a 3 -q -c -D -n %{git_name}/src/Mod/ #AddonManager
-%if %{with tests}  && %{with bundled_gtest}
-    %setup -T -a 4 -q -c -D -n %{git_name}/tests/ #lib
-%endif
-    %setup -T -b 0 -q -D -n %{git_name}
+  {{{ git_repo_setup_macro }}}
 
 %build
     cd %_builddir
@@ -170,13 +170,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         -DONDSELSOLVER_BUILD_EXE=TRUE \
         -DBUILD_GUI=TRUE
 
-    #adapt the script src/Tools/SubWCRev.py to extract the info during srpm generation
-    #and store it in a place that can be retrived at build time
-    #maybe in a string(json) that can be passed as cmake variable;
-    sed -i -e 's|"$WCREV$"|"%{wcvrev}"|g' %_vpath_builddir/src/Build/Version.h.in
-    sed -i -e 's|"$WCURL$"|"%{wcurl}"|g'  %_vpath_builddir/src/Build/Version.h.in
-    sed -i -e 's|"$WDATE$"|"%{wcdate}"|g'  %_vpath_builddir/src/Build/Version.h.in
-
     %cmake_build
 
 %install
@@ -185,8 +178,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     # Symlink binaries to /usr/bin
     mkdir -p %{buildroot}%{_bindir}
-    ln -s ../%{_lib}/%{name}/bin/FreeCAD %{buildroot}%{_bindir}/FreeCAD-git
-    ln -s ../%{_lib}/%{name}/bin/FreeCADCmd %{buildroot}%{_bindir}/FreeCADCmd-git
+    ln -s ../%{_lib}/%{name}/bin/FreeCAD %{buildroot}%{_bindir}/FreeCAD-%{flavor}
+    ln -s ../%{_lib}/%{name}/bin/FreeCADCmd %{buildroot}%{_bindir}/FreeCADCmd-%{flavor}
 
     # Remove header from external library that's erroneously installed
     rm -f %{buildroot}%{_libdir}/%{name}/include/E57Format/E57Export.h
