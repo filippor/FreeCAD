@@ -1,20 +1,26 @@
 function git_wcrev() {
-    python package/fedora/getVersion.py
+    output "`python package/fedora/getVersion.py`"
 }
 
 function git_wcdate() {
-    echo -n `git log -1 --format="%at" | xargs -I{} date -d @{} +"%Y/%m/%d %T"`
+    output "`git log -1 --format="%at" | xargs -I{} date -d @{} +"%Y/%m/%d %T"`"
 }
 
-function flavor() (
-    output "git"
+function package_name() (
+    output "freecad-git"
+)
+
+function build_version() (
+   output  "git"
 )
 
 function git_commit_hash() {
-    echo -n `git rev-parse HEAD`
+    output "`git rev-parse HEAD`"
 }
 
 function git_repo_pack_with_submodules() {
+    python package/fedora/writeVersion.py
+    log_info "git info updated on src/Build/Version.h.cmake"
     declare path= dir_name= source_name=""
 
     path="$GIT_ROOT"
