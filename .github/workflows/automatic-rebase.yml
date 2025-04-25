@@ -14,12 +14,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT }}
-          fetch-depth: 0  # Necessario per il rebase
+          fetch-depth: 100  # Necessario per il rebase
 
       - name: Add upstream remote
         run: |
           git remote add upstream https://github.com/FreeCAD/FreeCAD.git
-          git fetch upstream
+          git git fetch --shallow-since="2025-04-01" upstream copr
 
       - name: Rebase your branch onto upstream
         run: |
