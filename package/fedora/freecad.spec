@@ -10,11 +10,6 @@
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
 
-# Some plugins go in the Mod folder instead of lib. Deal with those here:
-%global mod_plugins Mod/PartDesign
-%define name freecad
-%define github_name FreeCAD
-%define branch main
 
 Name:           %{name}
 Epoch:          1
@@ -181,9 +176,8 @@ rm -rf %{github_name}
         -DONDSELSOLVER_BUILD_EXE=TRUE \
         -DBUILD_GUI=TRUE
 
-
-
     %cmake_build
+
 
 %install
     cd %_builddir
@@ -201,9 +195,6 @@ rm -rf %{github_name}
 
     rm -rf %{buildroot}%{_datadir}/pkgconfig/OndselSolver.pc
     rm -rf %{buildroot}%{_includedir}/OndselSolver/*
-    # Bytecompile Python modules
-    %py_byte_compile %{__python3} %{buildroot}%{_libdir}/%{name}
-
 
 %check
     cd %_builddir
@@ -254,6 +245,7 @@ rm -rf %{github_name}
     /usr/bin/update-desktop-database &> /dev/null || :
     /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 
+
 %postun
     if [ $1 -eq 0 ] ; then
         /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
@@ -261,6 +253,7 @@ rm -rf %{github_name}
     fi
     /usr/bin/update-desktop-database &> /dev/null || :
     /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
+
 
 %posttrans
     /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor/scalable/apps &>/dev/null || :
@@ -284,6 +277,7 @@ rm -rf %{github_name}
 %if %{with tests}
     %tests_resultdir/*
 %endif
+
 
 %files data
     %{_datadir}/%{name}/
