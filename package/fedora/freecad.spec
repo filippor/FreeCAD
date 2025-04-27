@@ -7,10 +7,6 @@
 %bcond_without bundled_smesh
 
 
-# Prevent RPM from doing its magical 'build' directory for now
-%global __cmake_in_source_build 0
-
-
 # Some plugins go in the Mod folder instead of lib. Deal with those here:
 %global mod_plugins Mod/PartDesign
 %define name freecad
@@ -112,6 +108,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     Data files for FreeCAD
 
 
+#path that contain main FreeCAD sources for cmake
+%global _vpath_srcdir  %_builddir/%{git_name}
 %prep
 rm -rf %{github_name}
 # extract submodule archive and move in correct path
@@ -136,7 +134,7 @@ rm -rf %{github_name}
 # Removed bundled libraries
 
 %build
-    rm -rf build && mkdir build && cd build
+     cd %_builddir
 
     # Deal with cmake projects that tend to link excessively.
     CXXFLAGS='-Wno-error=cast-function-type'; export CXXFLAGS
@@ -190,11 +188,11 @@ rm -rf %{github_name}
         sed -i 's,FCRepositoryURL \"Unknown\",FCRepositoryURL \"git://github.com/FreeCAD/FreeCAD.git main\",' $I
     done
 
-    %{make_build}
+    %cmake_build
 
 %install
-    cd build
-    %make_install
+    cd %_builddir
+    %cmake_install
 
     # Symlink binaries to /usr/bin
     mkdir -p %{buildroot}%{_bindir}
@@ -265,6 +263,7 @@ rm -rf %{github_name}
 
 
 %check
+    cd %_builddir
     desktop-file-validate \
         %{buildroot}%{_datadir}/applications/org.freecad.FreeCAD.desktop
     %{?fedora:appstream-util validate-relax --nonet \
