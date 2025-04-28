@@ -169,7 +169,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 #path that contain main FreeCAD sources for cmake
 %global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
 %prep
-    %setup -T -a 0 -q -c -n %{git_name}
+    %setup -T -a 0 -q -c
 
 %build
      # Deal with cmake projects that tend to link excessively.
@@ -337,4 +337,5 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     %{_includedir}/OndselSolver/*
 
 %changelog
-    - add gui test (filippor)
+* Mon Apr 28 2025 filippor <filippo.rossoni@gmail.com> - 1:1.0.0-20250428.20250428212145631925.test_pr.7803.g8c14661333
+
