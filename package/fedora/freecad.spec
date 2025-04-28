@@ -1,3 +1,4 @@
+
 # Some configuration options for other environments
 # rpmbuild --without=bundled_zipios: don't use bundled version of zipios++
 %bcond_without  bundled_zipios
@@ -208,12 +209,12 @@ rm -rf %{github_name}
 %if %{with tests}
     mkdir -p %{buildroot}%tests_resultdir
     pushd %_vpath_builddir
-    ./tests/Tests_run &> %{buildroot}%tests_resultdir/Tests_run.result              || echo "**** Failed Test_run ****"
+    (timeout 30m ./tests/Tests_run) &> %{buildroot}%tests_resultdir/Tests_run.result              || echo "**** Failed Test_run ****"
     tail -n 50 %{buildroot}%tests_resultdir/Tests_run.result
     ./bin/FreeCADCmd -t 0  &> %{buildroot}%tests_resultdir/FreeCADCmd_test.result   || echo "**** Failed FreeCADCmd -t 0 ****"
     tail -n 50 %{buildroot}%tests_resultdir/FreeCADCmd_test.result
-#    xvfb-run ./bin/FreeCAD -t 0 &> %{buildroot}%tests_resultdir/FreeCAD_test.result || echo "**** Failed FreeCAD -t 0 ****"
-#    tail -n 50 %{buildroot}%tests_resultdir/FreeCAD_test.result
+    (timeout 30m  xvfb-run ./bin/FreeCAD -t 0) &> %{buildroot}%tests_resultdir/FreeCAD_test.result || echo "**** Failed FreeCAD -t 0 ****"
+    tail -n 50 %{buildroot}%tests_resultdir/FreeCAD_test.result
     popd
     %ctest &> %{buildroot}%tests_resultdir/ctest.result                             || echo "Failed ctest"
     tail -n 50 %{buildroot}%tests_resultdir/ctest.result
