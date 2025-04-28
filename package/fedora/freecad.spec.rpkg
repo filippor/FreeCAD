@@ -338,4 +338,4 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     %{_includedir}/OndselSolver/*
 
 %changelog
-
+    - add gui test (filippor)
