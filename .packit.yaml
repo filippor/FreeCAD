@@ -1,17 +1,14 @@
 specfile_path: packit/freecad.spec
-files_to_sync:
-    - package/fedora/freecad.spec.rpkg
-    - prepare_packit_spec.sh
-    - .packit.yaml
 actions:
   post-upstream-clone: package/fedora/prepare_packit_spec.sh
-
+  changelog-entry:
+  - bash -c 'git log --no-merges --pretty="format:- %s (%an)" $(git describe --tags --abbrev=0 ${PACKIT_PROJECT_UPSTREAM_TAG}^)..${PACKIT_PROJECT_UPSTREAM_TAG} --'
   create-archive:
-    - git submodule update --init
-    - mkdir -p .packit
-    # Create an archive file with the ‹pkg› directory prefix
-    - bash -c 'git ls-files --recurse-submodules | tar  -caf packit/freecad.tar.gz -T-'
-    - echo -n 'packit/freecad.tar.gz'
+  - git submodule update --init
+  - mkdir -p .packit
+  # Create an archive file with the ‹pkg› directory prefix
+  - bash -c 'git ls-files --recurse-submodules | tar  -caf packit/freecad.tar.gz -T-'
+  - echo -n 'packit/freecad.tar.gz'
 
 upstream_package_name: freecad
 downstream_package_name: freecad
