@@ -1,0 +1,5 @@
+summary: Run Gui test for FreeCAD
+discover:
+    how: fmf
+execute:
+    script: FreeCAD -t 0
