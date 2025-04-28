@@ -169,8 +169,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 #path that contain main FreeCAD sources for cmake
 %global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
 %prep
-    rm -rf %{git_name}
-    %setup -T -a 0 -q -c -D -n %{git_name}
+    %setup -T -a 0 -q -c -n %{git_name}
 
 %build
      # Deal with cmake projects that tend to link excessively.
