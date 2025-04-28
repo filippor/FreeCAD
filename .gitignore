@@ -1,5 +1,7 @@
 # file types to ignore
 .*
+!/.fmf/
+!/.packit.yaml
 !/.clang-format
 !/.clang-tidy
 !/.git-blame-ignore-revs

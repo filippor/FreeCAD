@@ -1,0 +1,14 @@
+specfile_path: package/fedora/freecad.spec.rpkg
+files_to_sync:
+    -package/fedora/freecad.spec.rpkg
+    -.packit.yamk
+downstream_package_name: freecad-git
+- job: copr_build
+  trigger: push
+  targets: [fedora-stable]
+jobs:
+- job: tests
+  trigger: pull_request
+  metadata:
+    targets:
+    - [fedora-stable]

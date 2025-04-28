@@ -1,0 +1,4 @@
+summary:
+    Basic smoke test for bash
+execute:
+    script: bash --version
