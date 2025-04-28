@@ -2,7 +2,8 @@ specfile_path: package/fedora/freecad.spec.rpkg
 files_to_sync:
 - package/fedora/freecad.spec.rpkg
 - .packit.yamk
-downstream_package_name: freecad
+upstream_package_name: freecad
+downstream_package_name: "freecad"
 jobs:
 - job: copr_build
   trigger: pull_request
