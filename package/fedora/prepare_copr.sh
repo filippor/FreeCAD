@@ -18,6 +18,6 @@ sed \
 -e 's@{{{ git_wcrev }}}@'"$REVISION_NUMBER"'@g' \
 -e 's@{{{ git_commit_hash }}}@'"$COMMIT_HASH"'@g' \
 -e 's@{{{ git_repo_pack_with_submodules }}}@'"$SOURCE_URL"'@g' \
-freecad.spec.rpkg > .packit/freecad.spec
+freecad.spec.rpkg > packit/freecad.spec
 
 rm freecad.spec.rpkg

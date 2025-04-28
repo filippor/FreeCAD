@@ -1,5 +1,6 @@
 #!/bin/sh
-rm -rf .packit
+rm -rf packit
+mkdir -p packit
 PREP_MACRO="rm -rf %{git_name}\n   %setup -T -a 0 -q -c -D -n %{git_name}"
 sed \
 -e 's@{{{ git_name }}}@FreeCAD@g' \
@@ -10,4 +11,4 @@ sed \
 -e 's@{{{ git_commit_hash }}}@0000000@g' \
 -e 's@{{{ git_repo_pack_with_submodules }}}@freecad.tar.gz@g' \
 -e 's@{{{ git_repo_setup_macro }}}@'"$PREP_MACRO"'@g' \
-package/fedora/freecad.spec.rpkg > freecad.spec
+package/fedora/freecad.spec.rpkg > packit/freecad.spec
