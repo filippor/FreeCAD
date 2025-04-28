@@ -2,7 +2,7 @@ specfile_path: packit/freecad.spec
 actions:
   post-upstream-clone: package/fedora/prepare_packit_spec.sh
   changelog-entry:
-  - bash -c 'git log --no-merges --pretty="format:- %s (%an)" $(git describe --tags --abbrev=0 ${PACKIT_PROJECT_UPSTREAM_TAG}^)..${PACKIT_PROJECT_UPSTREAM_TAG} --'
+  - bash -c 'git log --no-merges --pretty="format:- %s (%an)" -n5'
   create-archive:
   - git submodule update --init
   - mkdir -p .packit
