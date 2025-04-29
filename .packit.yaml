@@ -28,7 +28,7 @@ jobs:
   branch: only-packit
   targets:
   - fedora-41
-  - fedora-42FreeCAD/FreeCAD/pulls
+  - fedora-42
 
 - job: copr_build
   identifier: main
