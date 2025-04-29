@@ -1,3 +1,4 @@
+#!/bin/sh
 RELEASE_VERSION="$1"
 PACKAGE="${2:-"freecad"}"
 
