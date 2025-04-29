@@ -1,7 +1,7 @@
 function write_version(){
     cd "$GIT_ROOT" || exit 1
     if [ ! -f "freecad_version.txt" ]; then
-        python ./package/fedora/make_version_file.py freecad_version.txt
+        python ./package/fedora/make_version_file.py freecad_version.txt >/dev/null
         log_info "git info updated on src/Build/Version.h.cmake"
     fi
 }

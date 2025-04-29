@@ -1,12 +1,12 @@
 RELEASE_VERSION="$1"
-PACKAGE="${2:-freecad}"
+PACKAGE="${2:-"freecad"}"
 
 COMMIT_DATE=`grep commit_date: freecad_version.txt | sed 's/commit_date: //g'`
 REVISION_NUMBER=`grep rev_number:  freecad_version.txt | sed 's/^rev_number: //g'`
 COMMIT_HASH=`grep commit_hash: freecad_version.txt | sed 's/^commit_hash: //g'`
 # REMOTE_URL=`grep remote_url:  freecad_version.txt | sed 's/^remote_url: //g'`
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
+echo ${BASH_SOURCE[0]}
 sed \
 -e 's@{{{ build_version }}}@'"$RELEASE_VERSION"'@g' \
 -e 's@{{{ package_name }}}@'"$PACKAGE"'@g' \
