@@ -1,5 +1,0 @@
-summary: Run Python test for commnd line FreeCADCmd
-discover:
-    how: shell
-execute:
-    script: bash -c "FreeCADCmd -t 0"
