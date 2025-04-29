@@ -1,4 +1,4 @@
-specfile_path: packit/freecad.spec
+specfile_path: freecad.spec
 actions:
   post-upstream-clone:
     - rm -rf packit
@@ -21,12 +21,7 @@ jobs:
   targets:
     - fedora-41
     - fedora-42
-- job: tests
-  trigger: pull_request
-  metadata:
-  targets:
-    - fedora-41
-    - fedora-42
+
 
 
 
