@@ -1,7 +1,6 @@
 specfile_path: freecad.spec
 actions:
   post-upstream-clone:
-    - rm -rf packit
     - python package/fedora/make_version_file.py freecad_version.txt
     - bash package/fedora/generate_spec_from_version.sh 1.1.0~pre
   changelog-entry:
