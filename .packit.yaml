@@ -17,8 +17,7 @@ jobs:
 - job: copr_build
   identifier: pull_request
   trigger: pull_request
-  #replace branch with main before merging
-  branch: packit
+  branch: main
   targets:
   - fedora-41
   - fedora-42
