@@ -1,5 +1,5 @@
 summary: Run Python test for commnd line FreeCADCmd
 discover:
-    how: fmf
+    how: shell
 execute:
-    script:  xvfb-run FreeCAD -t 0
+    script: bash -c  "xvfb-run FreeCAD -t 0"

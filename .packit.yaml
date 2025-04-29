@@ -19,8 +19,9 @@ jobs:
 - job: tests
   trigger: pull_request
   metadata:
-  targets: [fedora-stable]
-
+  targets:
+  - fedora-41
+  - fedora-42
 
 
 
