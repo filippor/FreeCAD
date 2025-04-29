@@ -11,7 +11,7 @@ actions:
     - mkdir -p .packit
     # Create an archive file with the ‹pkg› directory prefix
     - bash -c 'git ls-files --recurse-submodules | tar  -caf freecad-sources.tar.gz -T-'
-    - echo 'freecad-sources.tar.gz'
+    - echo -n 'freecad-sources.tar.gz'
 
 upstream_package_name: freecad
 downstream_package_name: freecad
