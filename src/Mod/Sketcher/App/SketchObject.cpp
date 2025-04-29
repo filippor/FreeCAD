@@ -3324,7 +3324,13 @@ int SketchObject::trim(int GeoId, const Base::Vector3d& point)
     // FIXME: we should be able to transfer these to new curves smoothly
     // auto geo = getGeometry(GeoId);
     const auto* geoAsCurve = getGeometry<Part::GeomCurve>(GeoId);
+
+    if (geoAsCurve == nullptr) {
+        return -1;
+    }
+
     bool isOriginalCurveConstruction = GeometryFacade::getConstruction(geoAsCurve);
+    bool isOriginalCurvePeriodic = isClosedCurve(geoAsCurve);
 
     //******************* Step A => Detection of intersection - Common to all Geometries
     //****************************************//
@@ -3399,7 +3405,7 @@ int SketchObject::trim(int GeoId, const Base::Vector3d& point)
     getConstraintIndices(GeoId, idsOfOldConstraints);
     // remove the constraints that we want to manually transfer
     // We could transfer beforehand but in case of exception that transfer is permanent
-    if (!isClosedCurve(geoAsCurve)) {
+    if (!isOriginalCurvePeriodic) {
         std::erase_if(idsOfOldConstraints,
                       [&GeoId, &allConstraints, &cuttingGeoIds](const auto& i) {
                           auto* constr = allConstraints[i];
@@ -3443,9 +3449,9 @@ int SketchObject::trim(int GeoId, const Base::Vector3d& point)
         addConstraint(std::move(newConstr));
     };
 
-    delConstraints(idsOfOldConstraints);
+    delConstraints(idsOfOldConstraints, false);
 
-    if (!isClosedCurve(geoAsCurve)) {
+    if (!isOriginalCurvePeriodic) {
         transferConstraints(GeoId, PointPos::start, newIds.front(), PointPos::start, true);
         transferConstraints(GeoId, PointPos::end, newIds.back(), PointPos::end, true);
     }
