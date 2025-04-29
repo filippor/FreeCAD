@@ -1,5 +1,5 @@
 RELEASE_VERSION="$1"
-PACKAGE=="${2:-freecad}"
+PACKAGE="${2:-freecad}"
 
 COMMIT_DATE=`grep commit_date: freecad_version.txt | sed 's/commit_date: //g'`
 REVISION_NUMBER=`grep rev_number:  freecad_version.txt | sed 's/^rev_number: //g'`
