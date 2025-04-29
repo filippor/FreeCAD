@@ -1,28 +1,24 @@
 specfile_path: freecad.spec
-files_to_sync:
-    - package/fedora/freecad.spec.rpkg
-    - prepare_packit_spec.sh
-    - .packit.yaml
 actions:
-  post-upstream-clone: package/fedora/prepare_packit_spec.sh
-
+  post-upstream-clone:
+    - python package/fedora/make_version_file.py freecad_version.txt >/dev/null
+    - package/fedora/generate_spec_from_version.sh 1.1.0~pre
+  changelog-entry:
+    - bash -c 'git log --no-merges --pretty="format:- %s (%an)" -n5'
   create-archive:
     - git submodule update --init
-    - mkdir -p .packit
     # Create an archive file with the ‹pkg› directory prefix
-    - bash -c 'git ls-files --recurse-submodules | tar  -caf .packit/freecad.tar.gz -T-'
-    - echo -n './.packit/freecad.tar.gz'
+    - bash -c 'git ls-files --recurse-submodules | tar  -caf freecad-sources.tar.gz -T-'
+    - echo -n 'freecad-sources.tar.gz'
 
 upstream_package_name: freecad
 downstream_package_name: freecad
 jobs:
 - job: copr_build
   trigger: pull_request
-  targets: [fedora-stable]
-- job: tests
-  trigger: pull_request
-  metadata:
-  targets: [fedora-stable]
+  targets:
+    - fedora-41
+    - fedora-42
 
 
 
