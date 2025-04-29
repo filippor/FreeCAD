@@ -3,7 +3,7 @@ actions:
   post-upstream-clone:
     - rm -rf packit
     - python package/fedora/make_version_file.py freecad_version.txt
-    - bash package/fedora/generate_spec_from_version.sh 1.0.0\~pre
+    - bash package/fedora/generate_spec_from_version.sh 1.1.0\~pre
   changelog-entry:
     - bash -c 'git log --no-merges --pretty="format:- %s (%an)" -n5'
   create-archive:
