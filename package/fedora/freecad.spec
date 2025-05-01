@@ -8,9 +8,9 @@
 # rpmbuild --without=tests:  esclude tests in %%check
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
-%bcond_without bundled_gtest
-
-
+%bcond_with bundled_gtest
+# rpmbuild --without=bundled_gtest:  don't build debug information
+%bcond_without debug_info
 
 
 Name:           freecad
@@ -45,7 +45,7 @@ Source0:        https://github.com/FreeCAD/FreeCAD-Bundle/releases/download/week
 %global bundled_ondsel_solver_version 1.0.1
 
 # Utilities
-BuildRequires:  cmake gcc-c++ gettext doxygen swig graphviz gcc-gfortran desktop-file-utils git tbb-devel
+BuildRequires:  cmake gcc-c++ gettext doxygen swig graphviz gcc-gfortran desktop-file-utils git tbb-devel ccache
 %if %{with tests}
 BuildRequires:  xorg-x11-server-Xvfb
 %if %{without bundled_gtest}
@@ -136,10 +136,14 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
 
+    ccache --set-config remote_storage=http://ccachefreecad23.s3.eu-north-1.amazonaws.com
+
     %define MEDFILE_INCLUDE_DIRS %{_includedir}/med/
 
      %cmake \
+     %if %{with debug_info}
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+     %endif
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
         -DCMAKE_INSTALL_DATADIR=%{_datadir}/%{name} \
         -DCMAKE_INSTALL_DOCDIR=%{_docdir}/%{name} \
@@ -164,7 +168,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     %endif
     %if %{with tests}
         -DENABLE_DEVELOPER_TESTS=TRUE \
-        -DINSTAL_GTEST=FALSE \
     %else
         -DENABLE_DEVELOPER_TESTS=FALSE \
     %endif
@@ -173,6 +176,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     %cmake_build
 
+    ccache -s
 
 %install
     %cmake_install
@@ -197,11 +201,22 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %if %{with tests}
     mkdir -p %{buildroot}%tests_resultdir
     pushd %_vpath_builddir
-    (timeout 30m ./tests/Tests_run) &> %{buildroot}%tests_resultdir/Tests_run.result || echo "**** Failed Test_run ****"
-    tail -n 50 %{buildroot}%tests_resultdir/Tests_run.result
+    if (timeout 30m ./tests/Tests_run) &> %{buildroot}%tests_resultdir/Tests_run.result ;then
+        echo "Test_run OK"
+    else
+        echo "**** Failed Test_run ****"
+        touch %{buildroot}%tests_resultdir/Tests_run.failed
+        cat %{buildroot}%tests_resultdir/Tests_run.result
+    fi
     popd
-    %ctest &> %{buildroot}%tests_resultdir/ctest.result || echo "**** Failed ctest ****"
-    tail -n 50 %{buildroot}%tests_resultdir/ctest.result
+    if %ctest &> %{buildroot}%tests_resultdir/ctest.result ; then
+        echo "ctest OK"
+    else
+        echo "**** Failed ctest ****"
+        touch %{buildroot}%tests_resultdir/ctest.failed
+        cat %{buildroot}%tests_resultdir/ctest.result
+    fi
+
 %endif
 
     # Bug maintainers to keep %%{plugins} macro up to date.
