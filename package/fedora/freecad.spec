@@ -45,7 +45,7 @@ Source0:        https://github.com/FreeCAD/FreeCAD-Bundle/releases/download/week
 %global bundled_ondsel_solver_version 1.0.1
 
 # Utilities
-BuildRequires:  cmake gcc-c++ gettext doxygen swig graphviz gcc-gfortran desktop-file-utils git tbb-devel
+BuildRequires:  cmake gcc-c++ gettext doxygen swig graphviz gcc-gfortran desktop-file-utils git tbb-devel ccache
 %if %{with tests}
 BuildRequires:  xorg-x11-server-Xvfb
 %if %{without bundled_gtest}
@@ -136,6 +136,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
 
+    ccache --set-config remote_storage=http://ccachefreecad23.s3.eu-north-1.amazonaws.com
+
     %define MEDFILE_INCLUDE_DIRS %{_includedir}/med/
 
      %cmake \
@@ -174,6 +176,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     %cmake_build
 
+    ccache -s
 
 %install
     %cmake_install

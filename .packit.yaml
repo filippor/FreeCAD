@@ -20,6 +20,7 @@ jobs:
   identifier: pull_request
   trigger: pull_request
   manual_trigger: true
+  enable_net: true
   notifications:
     pull_request:
       successful_build: True
