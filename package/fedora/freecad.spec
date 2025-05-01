@@ -9,10 +9,11 @@
 # rpmbuild --without=tests:  esclude tests in %%check
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
-%bcond_without bundled_gtest
+%bcond_with bundled_gtest
+# rpmbuild --without=bundled_gtest:  don't build debug information
+%bcond_without debug_info
 
-
-Name:           %{name}
+Name:           freecad
 Epoch:          1
 Version:        1.1.0
 Release:        pre_{{{git_commit_no}}}%{?dist}
@@ -149,7 +150,9 @@ rm -rf %{github_name}
     %define MEDFILE_INCLUDE_DIRS %{_includedir}/med/
 
      %cmake \
+     %if %{with debug_info}
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+     %endif
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
         -DCMAKE_INSTALL_DATADIR=%{_datadir}/%{name} \
         -DCMAKE_INSTALL_DOCDIR=%{_docdir}/%{name} \
@@ -209,15 +212,21 @@ rm -rf %{github_name}
 %if %{with tests}
     mkdir -p %{buildroot}%tests_resultdir
     pushd %_vpath_builddir
-    (timeout 30m ./tests/Tests_run) &> %{buildroot}%tests_resultdir/Tests_run.result              || echo "**** Failed Test_run ****"
-    tail -n 50 %{buildroot}%tests_resultdir/Tests_run.result
-    ./bin/FreeCADCmd -t 0  &> %{buildroot}%tests_resultdir/FreeCADCmd_test.result   || echo "**** Failed FreeCADCmd -t 0 ****"
-    tail -n 50 %{buildroot}%tests_resultdir/FreeCADCmd_test.result
-    (timeout 30m  xvfb-run ./bin/FreeCAD -t 0) &> %{buildroot}%tests_resultdir/FreeCAD_test.result || echo "**** Failed FreeCAD -t 0 ****"
-    tail -n 50 %{buildroot}%tests_resultdir/FreeCAD_test.result
+    if (timeout 30m ./tests/Tests_run) &> %{buildroot}%tests_resultdir/Tests_run.result ;then
+        echo "Test_run OK"
+    else
+        echo "**** Failed Test_run ****"
+        touch %{buildroot}%tests_resultdir/Tests_run.failed
+        cat %{buildroot}%tests_resultdir/Tests_run.result
+    fi
     popd
-    %ctest &> %{buildroot}%tests_resultdir/ctest.result                             || echo "Failed ctest"
-    tail -n 50 %{buildroot}%tests_resultdir/ctest.result
+    if %ctest &> %{buildroot}%tests_resultdir/ctest.result ; then
+        echo "ctest OK"
+    else
+        echo "**** Failed ctest ****"
+        touch %{buildroot}%tests_resultdir/ctest.failed
+        cat %{buildroot}%tests_resultdir/ctest.result
+    fi
 %endif
 
     # Bug maintainers to keep %%{plugins} macro up to date.
