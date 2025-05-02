@@ -15,8 +15,9 @@
 
 Name:           freecad
 Epoch:          1
-Version:        1.1.0
-Release:        pre_{{{git_commit_no}}}%{?dist}
+Version:        1.1.0~dev
+Release:        %autorelease
+
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
 License:        GPL-2.0-or-later
@@ -33,7 +34,7 @@ Source3:        {{{ git_pack path=$GIT_ROOT/src/Mod/AddonManager/ dir_name="Addo
 
 %global exported_libs libOndselSolver
 
-%if %{with tests}
+%if %{with bundled_gtest}
  %global plugins %{plugins} libgmock libgmock_main  libgtest libgtest_main
 %endif
 
@@ -177,7 +178,6 @@ rm -rf %{github_name}
     %endif
     %if %{with tests}
         -DENABLE_DEVELOPER_TESTS=TRUE \
-        -DINSTAL_GTEST=FALSE \
     %else
         -DENABLE_DEVELOPER_TESTS=FALSE \
     %endif
