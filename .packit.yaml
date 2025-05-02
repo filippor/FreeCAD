@@ -26,12 +26,7 @@ jobs:
   #replace branch with main before merging
   branch: only-packit
   targets:
-    fedora-41:
-      without_opts:
-      - debug_info
     fedora-42:
-      without_opts:
-      - debug_info
 
 - job: tests
   identifier: pull_request

@@ -9,8 +9,6 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
-# rpmbuild --without=bundled_gtest:  don't build debug information
-%bcond_without debug_info
 
 
 Name:           freecad
@@ -32,10 +30,6 @@ Source0:        https://github.com/FreeCAD/FreeCAD-Bundle/releases/download/week
 
 %global exported_libs libOndselSolver
 
-%if %{with bundled_gtest}
- %global plugins %{plugins} libgmock libgmock_main  libgtest libgtest_main
-%endif
-
 
 # See FreeCAD-main/src/3rdParty/salomesmesh/CMakeLists.txt to find this out.
 %global bundled_smesh_version 7.7.1.0
@@ -45,7 +39,7 @@ Source0:        https://github.com/FreeCAD/FreeCAD-Bundle/releases/download/week
 %global bundled_ondsel_solver_version 1.0.1
 
 # Utilities
-BuildRequires:  cmake gcc-c++ gettext doxygen swig graphviz gcc-gfortran desktop-file-utils git tbb-devel
+BuildRequires:  cmake gcc-c++ gettext swig gcc-gfortran desktop-file-utils tbb-devel ninja-build
 %if %{with tests}
 BuildRequires:  xorg-x11-server-Xvfb
 %if %{without bundled_gtest}
@@ -54,7 +48,8 @@ BuildRequires: gtest-devel gmock-devel
 %endif
 
 # Development Libraries
-BuildRequires:boost-devel Coin4-devel eigen3-devel freeimage-devel fmt-devel libglvnd-devel libicu-devel libkdtree++-devel libspnav-devel libXmu-devel med-devel mesa-libEGL-devel mesa-libGLU-devel netgen-mesher-devel netgen-mesher-devel-private opencascade-devel openmpi-devel pcl-devel python3 python3-devel python3-matplotlib python3-pivy python3-pybind11 python3-pyside6-devel python3-shiboken6-devel pyside6-tools qt6-qttools-static qt6-qtsvg-devel vtk-devel xerces-c-devel yaml-cpp-devel
+BuildRequires:boost-devel Coin4-devel eigen3-devel freeimage-devel fmt-devel libglvnd-devel libicu-devel libkdtree++-devel libspnav-devel libXmu-devel med-devel mesa-libEGL-devel mesa-libGLU-devel netgen-mesher-devel netgen-mesher-devel-private opencascade-devel openmpi-devel python3 python3-devel python3-matplotlib python3-pivy python3-pybind11 python3-pyside6-devel python3-shiboken6-devel pyside6-tools qt6-qttools-static qt6-qtsvg-devel vtk-devel xerces-c-devel yaml-cpp-devel
+#pcl-devel
 %if %{without bundled_smesh}
 BuildRequires:  smesh-devel
 %endif
@@ -138,15 +133,11 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %endif
 
 %build
+  
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
 
-    %define MEDFILE_INCLUDE_DIRS %{_includedir}/med/
-
      %cmake \
-     %if %{with debug_info}
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-     %endif
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
         -DCMAKE_INSTALL_DATADIR=%{_datadir}/%{name} \
         -DCMAKE_INSTALL_DOCDIR=%{_docdir}/%{name} \
@@ -171,12 +162,14 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     %endif
     %if %{with tests}
         -DENABLE_DEVELOPER_TESTS=TRUE \
+        -DINSTALL_GTEST=OFF \
+        -DINSTALL_GMOCK=OFF \
     %else
         -DENABLE_DEVELOPER_TESTS=FALSE \
     %endif
         -DONDSELSOLVER_BUILD_EXE=TRUE \
-        -DBUILD_GUI=TRUE
-
+        -DBUILD_GUI=TRUE \
+        -G Ninja
     %cmake_build
 
 
@@ -190,12 +183,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     # Remove header from external library that's erroneously installed
     rm -rf %{buildroot}%{_libdir}/%{name}/include/E57Format
-    rm -rf %{buildroot}%{_includedir}/gmock
-    rm -rf %{buildroot}%{_includedir}/gtest
-
-    rm -rf %{buildroot}%{_libdir}/%{name}/%{_lib}/cmake
-    rm -rf %{buildroot}%{_libdir}/%{name}/%{_lib}/pkgconfig
-
+    
 %check
     desktop-file-validate %{buildroot}%{_datadir}/applications/org.freecad.FreeCAD.desktop
     %{?fedora:appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml}
