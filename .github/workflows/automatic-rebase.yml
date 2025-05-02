@@ -46,7 +46,7 @@ jobs:
       - name: Add upstream remote
         run: |
           git remote add upstream https://github.com/FreeCAD/FreeCAD.git
-          git --tags fetch --shallow-since="2025-05-01" upstream main
+          git etch --tags --shallow-since="2025-05-01" upstream main
 
       - name: Rebase your branch onto upstream
         run: |
