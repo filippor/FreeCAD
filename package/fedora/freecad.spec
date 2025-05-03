@@ -9,6 +9,8 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
+%bcond_without generate_ccache
+%bcond_with use_ccache
 
 
 Name:           freecad
@@ -45,6 +47,12 @@ BuildRequires:  xorg-x11-server-Xvfb
 %if %{without bundled_gtest}
 BuildRequires: gtest-devel gmock-devel
 %endif
+%endif
+%if %{with generate_ccache}||%{with use_ccache}
+BuildRequires:  ccache
+%endif
+%if %{with use_ccache}
+BuildRequires %name-ccache-%_arch
 %endif
 
 # Development Libraries
@@ -121,9 +129,22 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %description libondselsolver-devel
     Development file for OndselSolver
 
+%if %{with generate_ccache}
+%package ccache-%{_arch}
+    Summary:        ccache
+    BuildArch:      noarch
+%description ccache-%{_arch}
+    This package contains pre-generated ccache data from a build of FreeCAD.
+    Installing it can significantly speed up subsequent local builds by providing
+    cached compilation results.
+%endif
+
 
 #path that contain main FreeCAD sources for cmake
 %global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
+%global ccache_build_dir %{_builddir}/ccache
+%global ccache_target_dir %{_localstatedir}/%{name}/ccache/%_arch
+
 %prep
     %setup -T -a 0 -q -c -n FreeCAD
     
@@ -136,8 +157,17 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
   
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
-
-     %cmake \
+    %if %{with generate_ccache}||%{with use_ccache}
+        if [ -d %{ccache_target_dir} ]; then
+            cp -rf %{ccache_target_dir} %{ccache_build_dir}
+        fi
+        export CCACHE_DIR="%{ccache_build_dir}"
+        export CCACHE_BASEDIR="`pwd`"
+        export CCACHE_COMPRESSION_LEVEL=6
+        export CCACHE_MAXSIZE=8G
+    %endif
+    
+    %cmake \
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
         -DCMAKE_INSTALL_DATADIR=%{_datadir}/%{name} \
         -DCMAKE_INSTALL_DOCDIR=%{_docdir}/%{name} \
@@ -171,7 +201,9 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         -DBUILD_GUI=TRUE \
         -G Ninja
     %cmake_build
-
+    %if %{with generate_ccache}||%{with use_ccache}
+        ccache -s
+    %endif
 
 %install
     %cmake_install
@@ -183,6 +215,14 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     # Remove header from external library that's erroneously installed
     rm -rf %{buildroot}%{_libdir}/%{name}/include/E57Format
+    
+    %if %{with generate_ccache}
+        CCACHE_MAXSIZE=4G ccache -c
+        mkdir -p %{buildroot}%{ccache_target_dir}
+        mv  %{ccache_build_dir} %{buildroot}%{ccache_target_dir}
+        
+    %endif
+
     
 %check
     desktop-file-validate %{buildroot}%{_datadir}/applications/org.freecad.FreeCAD.desktop
@@ -297,5 +337,10 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %files libondselsolver-devel
     %{_datadir}/pkgconfig/OndselSolver.pc
     %{_includedir}/OndselSolver/*
+
+%if %{with generate_ccache}
+%files ccache-%_arch
+    %{ccache_target_dir}/*
+%endif 
 
 %changelog
