@@ -159,25 +159,24 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
  
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
+    
     %if %{with generate_ccache}||%{with use_ccache}
         mkdir -p %{ccache_build_dir}
-        %if  %{without generate_ccache}
-            export CCACHE_DIR=%{ccache_target_dir}
-            export CCACHE_READONLY=true
-            export CCACHE_TEMPDIR="%{ccache_build_dir}"
-        %else
-            if [ -d %{ccache_target_dir} ]; then
-                cp -rf %{ccache_target_dir}/* %{ccache_build_dir}/
-            fi
-            export CCACHE_DIR="%{ccache_build_dir}"
-            export CCACHE_MAXSIZE=10G
-            export CCACHE_COMPRESSLEVEL=50
-        %endif
+        if [ -d %{ccache_target_dir} ]; then
+            cp -rf %{ccache_target_dir}/* %{ccache_build_dir}/
+        fi
+        export CCACHE_DIR="%{ccache_build_dir}"
+        export CCACHE_MAXSIZE=10G
+        export CCACHE_COMPRESSLEVEL=50
         export CCACHE_BASEDIR="`pwd`"
         ccache -s
         ccache -z
+        %if %{without generate_ccache}
+            export CCACHE_READONLY=true
+        %endif
+        
     %endif
-
+        
     %define __global_cflags %(echo %{optflags} | sed 's/-g\\s*//')
     %define __global_cxxflags %(echo %{optflags} | sed 's/-g\\s*//')
     
