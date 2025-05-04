@@ -172,13 +172,14 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
             fi
             export CCACHE_DIR="%{ccache_build_dir}"
             export CCACHE_MAXSIZE=10G
-            export CCACHE_COMPRESSLEVEL 50
+            export CCACHE_COMPRESSLEVEL=50
+            export CCACHE_BASEDIR="`pwd`"
             ccache -s
             ccache -z
             %if %{without generate_ccache}
                 export CCACHE_READONLY=true
             %endif
-            export CCACHE_BASEDIR="`pwd`"
+           
         %endif
         
     
