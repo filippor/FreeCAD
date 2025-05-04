@@ -168,6 +168,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         export CCACHE_MAXSIZE=10G
         ccache -s
         ccache -p
+        exit 1
     %endif
     
     %cmake \
