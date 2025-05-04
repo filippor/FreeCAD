@@ -145,6 +145,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %global ccache_build_dir %{_builddir}/ccache_temp_build
 %global ccache_target_dir %{_localstatedir}/%{name}/ccache/%_arch
 
+%global debug_package %{nil}
+%global _enable_debug_packages 0
 
 %prep
     %setup -T -a 0 -q -c -n FreeCAD
