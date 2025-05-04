@@ -145,6 +145,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %global ccache_build_dir %{_builddir}/ccache_temp_build
 %global ccache_target_dir %{_localstatedir}/%{name}/ccache/%_arch
 
+
 %prep
     %setup -T -a 0 -q -c -n FreeCAD
     
@@ -152,11 +153,16 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     rm -rf tests/lib/googletest
     rm -rf tests/lib/googlemock
 %endif
+    
 
 %build
-
+ 
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
+
+
+
+
     %if %{with use_ccache} && %{without generate_ccache}
         export CCACHE_DIR=%{ccache_target_dir}/ccache
         export CCACHE_READONLY=true
@@ -167,8 +173,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
                 cp -rf %{ccache_target_dir}/ccache/* %{ccache_build_dir}
             fi
             export CCACHE_DIR="%{ccache_build_dir}"
-            export CCACHE_COMPRESSION_LEVEL=9
-            export CCACHE_MAXSIZE=10G
+            export CCACHE_MAXSIZE=12G
             ccache -z
         %endif
         export CCACHE_BASEDIR="`pwd`"
@@ -223,12 +228,12 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     # Remove header from external library that's erroneously installed
     rm -rf %{buildroot}%{_libdir}/%{name}/include/E57Format
     
-    %if %{with generate_ccache}
-        CCACHE_MAXSIZE=5G ccache -c
+    %if %{with generate_ccache} 
+        export CCACHE_DIR="%{ccache_build_dir}"   
         ccache -X 50
+        CCACHE_MAXSIZE=4G ccache -c
         mkdir -p %{buildroot}%{ccache_target_dir}
-        mv  %{ccache_build_dir} %{buildroot}%{ccache_target_dir}
-        
+        mv  %{ccache_build_dir} %{buildroot}%{ccache_target_dir} 
     %endif
 
     
