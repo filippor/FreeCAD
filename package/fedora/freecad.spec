@@ -162,10 +162,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         export CCACHE_READONLY=true
     %else 
         %if %{with generate_ccache}||%{with use_ccache}
-            ccache -s
             mkdir -p %{ccache_build_dir}
-            echo %{ccache_target_dir}
-            if [ -d %{ccache_target_dir} ]; then
+            if [ -d %{ccache_target_dir}/ccache ]; then
                 cp -rf %{ccache_target_dir}/ccache/* %{ccache_build_dir}
             fi
             export CCACHE_DIR="%{ccache_build_dir}"
