@@ -142,7 +142,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 #path that contain main FreeCAD sources for cmake
 %global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
-%global ccache_build_dir `ccache --get-config cache_dir`
+%global ccache_build_dir %{_builddir}/ccache_temp_build
 %global ccache_target_dir %{_localstatedir}/%{name}/ccache/%_arch
 
 %prep
@@ -161,21 +161,18 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         export CCACHE_DIR=%{ccache_target_dir}/ccache
         export CCACHE_READONLY=true
     %else 
-    %if %{with generate_ccache}||%{with use_ccache}
-        ccache -s
-        mkdir -p %{ccache_build_dir}
-        echo %{ccache_target_dir}
-        if [ -d %{ccache_target_dir} ]; then
-            cp -rf %{ccache_target_dir}/ccache/* %{ccache_build_dir}
-        fi
-        export CCACHE_DIR="%{ccache_build_dir}"
+        %if %{with generate_ccache}||%{with use_ccache}
+            ccache -s
+            mkdir -p %{ccache_build_dir}
+            echo %{ccache_target_dir}
+            if [ -d %{ccache_target_dir} ]; then
+                cp -rf %{ccache_target_dir}/ccache/* %{ccache_build_dir}
+            fi
+            export CCACHE_DIR="%{ccache_build_dir}"
+            export CCACHE_COMPRESSION_LEVEL=6
+            export CCACHE_MAXSIZE=10G
+        %endif
         export CCACHE_BASEDIR="`pwd`"
-        export CCACHE_COMPRESSION_LEVEL=6
-        export CCACHE_MAXSIZE=10G
-        ccache -z
-        ccache -p
-        ccache -s
-    %endif
     %endif
     
     %cmake \
