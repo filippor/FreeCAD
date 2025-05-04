@@ -16,7 +16,7 @@
 Name:           freecad
 Epoch:          1
 Version:        1.1.0~dev
-Release:        %autorelease
+Release:        %autoreleaseexport CCACHE_READONLY=true
 
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
@@ -160,7 +160,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     %if %{with use_ccache} && %{without generate_ccache}
         export CCACHE_DIR=%{ccache_target_dir}/ccache
         export CCACHE_READONLY=true
-    %else %if %{with generate_ccache}||%{with use_ccache}
+    %else 
+    %if %{with generate_ccache}||%{with use_ccache}
         ccache -s
         mkdir -p %{ccache_build_dir}
         echo %{ccache_target_dir}
@@ -174,6 +175,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         ccache -z
         ccache -p
         ccache -s
+    %endif
     %endif
     
     %cmake \
