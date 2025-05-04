@@ -168,9 +168,9 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         export CCACHE_BASEDIR="`pwd`"
         export CCACHE_COMPRESSION_LEVEL=6
         export CCACHE_MAXSIZE=10G
+        ccache -z
         ccache -p
         ccache -s
-        exit 1
     %endif
     
     %cmake \
