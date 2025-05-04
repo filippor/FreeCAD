@@ -159,9 +159,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %build
  
-   %define __global_cflags %(echo %{optflags} | sed 's/-g\\b//g')
-   %define __global_cxxflags %(echo %{optflags} | sed 's/-g\\b//g')
-
     %if %{with generate_ccache}||%{with use_ccache}
         mkdir -p %{ccache_build_dir}
         %if  %{without generate_ccache}
