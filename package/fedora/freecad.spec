@@ -9,7 +9,7 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
-%bcond_without generate_ccache
+%bcond_with generate_ccache
 %bcond_without use_ccache
 
 
@@ -157,7 +157,10 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
-    %if %{with generate_ccache}||%{with use_ccache}
+    %if %{with use_ccache} && %{without generate_ccache}
+        export CCACHE_DIR=%{ccache_target_dir}/ccache
+        export CCACHE_READONLY=true
+    %else %if %{with generate_ccache}||%{with use_ccache}
         ccache -s
         mkdir -p %{ccache_build_dir}
         echo %{ccache_target_dir}
