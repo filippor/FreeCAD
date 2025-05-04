@@ -9,7 +9,7 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
-%bcond_with generate_ccache
+%bcond_without generate_ccache
 %bcond_without use_ccache
 
 
@@ -159,28 +159,23 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
  
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
-
-
-
-
-   
-     
-        %if %{with generate_ccache}||%{with use_ccache}
-            mkdir -p %{ccache_build_dir}
-            if [ -d %{ccache_target_dir} ]; then
-                cp -rf %{ccache_target_dir}/* %{ccache_build_dir}/
-            fi
-            export CCACHE_DIR="%{ccache_build_dir}"
-            export CCACHE_MAXSIZE=10G
-            export CCACHE_COMPRESSLEVEL=50
-            export CCACHE_BASEDIR="`pwd`"
-            ccache -s
-            ccache -z
-            %if %{without generate_ccache}
-                export CCACHE_READONLY=true
-            %endif
-           
+    
+    %if %{with generate_ccache}||%{with use_ccache}
+        mkdir -p %{ccache_build_dir}
+        if [ -d %{ccache_target_dir} ]; then
+            cp -rf %{ccache_target_dir}/* %{ccache_build_dir}/
+        fi
+        export CCACHE_DIR="%{ccache_build_dir}"
+        export CCACHE_MAXSIZE=10G
+        export CCACHE_COMPRESSLEVEL=50
+        export CCACHE_BASEDIR="`pwd`"
+        ccache -s
+        ccache -z
+        %if %{without generate_ccache}
+            export CCACHE_READONLY=true
         %endif
+        
+    %endif
         
     %define __global_cflags %(echo %{optflags} | sed 's/-g\\s*//')
     %define __global_cxxflags %(echo %{optflags} | sed 's/-g\\s*//')
@@ -234,8 +229,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     ln -s ../%{_lib}/%{name}/bin/FreeCADCmd %{buildroot}%{_bindir}/FreeCADCmd
 
     # Remove header from external library that's erroneously installed
-    rm -rf %{buildroot}%{_libdir}/%{name}-g/include/E57Format
-    
+    rm -rf %{buildroot}%{_libdir}/%{name}/include/E57Format
+                
     %if %{with generate_ccache} 
         export CCACHE_DIR="%{ccache_build_dir}"   
         CCACHE_MAXSIZE=4G ccache -c
