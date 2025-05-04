@@ -164,7 +164,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 
     %if %{with use_ccache} && %{without generate_ccache}
-        export CCACHE_DIR=%{ccache_target_dir}/ccache_temp_build
+        export CCACHE_DIR=%{ccache_target_dir}
         export CCACHE_READONLY=true
         mkdir -p %{ccache_build_dir}
         export CCACHE_TEMPDIR="%{ccache_build_dir}"
@@ -173,7 +173,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         %if %{with generate_ccache}||%{with use_ccache}
             mkdir -p %{ccache_build_dir}
             if [ -d %{ccache_target_dir} ]; then
-                cp -rf %{ccache_target_dir}/ccache_temp_build/* %{ccache_build_dir}/
+                cp -rf %{ccache_target_dir}/* %{ccache_build_dir}/
             fi
             export CCACHE_DIR="%{ccache_build_dir}"
             export CCACHE_MAXSIZE=12G
@@ -237,7 +237,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         ccache -X 50
         CCACHE_MAXSIZE=4G ccache -c
         mkdir -p %{buildroot}%{ccache_target_dir}
-        mv  %{ccache_build_dir} %{buildroot}%{ccache_target_dir} 
+        mv  %{ccache_build_dir}/* %{buildroot}%{ccache_target_dir} 
     %endif
 
     
