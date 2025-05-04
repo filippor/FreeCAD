@@ -166,7 +166,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     %if %{with use_ccache} && %{without generate_ccache}
         export CCACHE_DIR=%{ccache_target_dir}/ccache_temp_build
         export CCACHE_READONLY=true
-        exit 1
+        ccache -s
     %else 
         %if %{with generate_ccache}||%{with use_ccache}
             mkdir -p %{ccache_build_dir}
