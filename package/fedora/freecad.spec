@@ -163,13 +163,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 
 
-    %if %{with use_ccache} && %{without generate_ccache}
-        export CCACHE_DIR=%{ccache_target_dir}
-        export CCACHE_READONLY=true
-        mkdir -p %{ccache_build_dir}
-        export CCACHE_TEMPDIR="%{ccache_build_dir}"
-        ccache -s
-    %else 
+   
+     
         %if %{with generate_ccache}||%{with use_ccache}
             mkdir -p %{ccache_build_dir}
             if [ -d %{ccache_target_dir} ]; then
@@ -179,9 +174,13 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
             export CCACHE_MAXSIZE=12G
             ccache -s
             ccache -z
+            %if %{with use_ccache} && %{without generate_ccache}
+                export CCACHE_READONLY=true
+            %endif
+            export CCACHE_BASEDIR="`pwd`"
         %endif
-        export CCACHE_BASEDIR="`pwd`"
-    %endif
+        
+    
     
     %cmake \
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
@@ -216,7 +215,9 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         -DONDSELSOLVER_BUILD_EXE=TRUE \
         -DBUILD_GUI=TRUE \
         -G Ninja
+
     %cmake_build
+
     %if %{with generate_ccache}||%{with use_ccache}
         ccache -s
     %endif
