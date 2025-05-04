@@ -9,7 +9,7 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
-%bcond_without generate_ccache
+%bcond_with generate_ccache
 %bcond_without use_ccache
 
 
@@ -166,7 +166,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     %if %{with use_ccache} && %{without generate_ccache}
         export CCACHE_DIR=%{ccache_target_dir}/ccache_temp_build
         export CCACHE_READONLY=true
-         exit 1
+        exit 1
     %else 
         %if %{with generate_ccache}||%{with use_ccache}
             mkdir -p %{ccache_build_dir}
