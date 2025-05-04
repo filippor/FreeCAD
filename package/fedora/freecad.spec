@@ -159,6 +159,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
     %if %{with generate_ccache}||%{with use_ccache}
         ccache -s
+        mkdir -p %{ccache_build_dir}
         echo %{ccache_target_dir}
         if [ -d %{ccache_target_dir} ]; then
             cp -rf %{ccache_target_dir}/ccache/* %{ccache_build_dir}
