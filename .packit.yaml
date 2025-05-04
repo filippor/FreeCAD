@@ -32,10 +32,9 @@ jobs:
   branch: only-packit
   targets:
     fedora-42:
-      without_opts: 
-      - generate_ccache
       with_opts:
       - use_ccache
+      - generate_ccache
       additional_repos:
       - copr://packit/filippor-FreeCAD-11-pull_request
 
@@ -46,7 +45,10 @@ jobs:
   #replace branch/only-packit testh with main before merginging
   branch: only-packit
   targets:
-    fedora-42: {}
+    fedora-42: 
+      without_opts:
+      - use_ccache
+      - generate_ccache
   notifications:
     failure_comment:
       message: "One of the tests failed for {commit_sha}. @admin check logs {logs_url}, packit dashboard {packit_dashboard_url} and external service dashboard {external_dashboard_url}"

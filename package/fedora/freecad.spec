@@ -169,8 +169,9 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
                 cp -rf %{ccache_target_dir}/ccache/* %{ccache_build_dir}
             fi
             export CCACHE_DIR="%{ccache_build_dir}"
-            export CCACHE_COMPRESSION_LEVEL=6
+            export CCACHE_COMPRESSION_LEVEL=9
             export CCACHE_MAXSIZE=10G
+            ccache -z
         %endif
         export CCACHE_BASEDIR="`pwd`"
     %endif
@@ -226,6 +227,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     
     %if %{with generate_ccache}
         CCACHE_MAXSIZE=5G ccache -c
+        ccache -X 50
         mkdir -p %{buildroot}%{ccache_target_dir}
         mv  %{ccache_build_dir} %{buildroot}%{ccache_target_dir}
         
