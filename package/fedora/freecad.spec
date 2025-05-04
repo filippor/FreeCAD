@@ -16,7 +16,7 @@
 Name:           freecad
 Epoch:          1
 Version:        1.1.0~dev
-Release:        %autoreleaseexport
+Release:        %autorelease
 
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
