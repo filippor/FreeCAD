@@ -10,7 +10,7 @@
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
 %bcond_with generate_ccache
-%bcond_with use_ccache
+%bcond_without use_ccache
 
 
 Name:           freecad
