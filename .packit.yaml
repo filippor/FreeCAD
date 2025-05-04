@@ -32,9 +32,10 @@ jobs:
   branch: only-packit
   targets:
     fedora-42:
+      without_opts:
+      - generate_ccache
       with_opts:
       - use_ccache
-      - generate_ccache
       additional_repos:
       - copr://packit/filippor-FreeCAD-11-pull_request
 
