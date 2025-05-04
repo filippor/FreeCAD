@@ -9,7 +9,7 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
-%bcond_without generate_ccache
+%bcond_with generate_ccache
 %bcond_without use_ccache
 
 
