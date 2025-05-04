@@ -161,14 +161,14 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         ccache -s
         echo %{ccache_target_dir}
         if [ -d %{ccache_target_dir} ]; then
-            cp -rf %{ccache_target_dir} %{ccache_build_dir}
+            cp -rf %{ccache_target_dir}/ccache/* %{ccache_build_dir}
         fi
-        #export CCACHE_DIR="%{ccache_build_dir}"
+        export CCACHE_DIR="%{ccache_build_dir}"
         export CCACHE_BASEDIR="`pwd`"
         export CCACHE_COMPRESSION_LEVEL=6
         export CCACHE_MAXSIZE=10G
-        ccache -s
         ccache -p
+        ccache -s
         exit 1
     %endif
     
