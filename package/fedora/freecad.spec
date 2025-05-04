@@ -154,7 +154,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %endif
 
 %build
-  
+
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
     %if %{with generate_ccache}||%{with use_ccache}
