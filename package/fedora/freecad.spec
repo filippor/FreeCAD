@@ -9,7 +9,7 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
-%bcond_without generate_ccache
+%bcond_with generate_ccache
 %bcond_without use_ccache
 
 
@@ -182,7 +182,8 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
            
         %endif
         
-    
+    %define __global_cflags %(echo %{optflags} | sed 's/-g\\s*//')
+    %define __global_cxxflags %(echo %{optflags} | sed 's/-g\\s*//')
     
     %cmake \
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
