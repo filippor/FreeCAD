@@ -52,7 +52,7 @@ BuildRequires: gtest-devel gmock-devel
 BuildRequires:  ccache
 %endif
 %if %{with use_ccache}
-BuildRequires %name-ccache-%_arch
+BuildRequires: %name-ccache-%_arch
 %endif
 
 # Development Libraries
@@ -142,7 +142,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 #path that contain main FreeCAD sources for cmake
 %global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
-%global ccache_build_dir %{_builddir}/ccache
+%global ccache_build_dir `ccache --get-config cache_dir`
 %global ccache_target_dir %{_localstatedir}/%{name}/ccache/%_arch
 
 %prep
@@ -158,13 +158,16 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
      # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
     %if %{with generate_ccache}||%{with use_ccache}
+        ccache -s
         if [ -d %{ccache_target_dir} ]; then
             cp -rf %{ccache_target_dir} %{ccache_build_dir}
         fi
-        export CCACHE_DIR="%{ccache_build_dir}"
+        #export CCACHE_DIR="%{ccache_build_dir}"
         export CCACHE_BASEDIR="`pwd`"
         export CCACHE_COMPRESSION_LEVEL=6
-        export CCACHE_MAXSIZE=8G
+        export CCACHE_MAXSIZE=10G
+        ccache -s
+        ccache -p
     %endif
     
     %cmake \
@@ -217,7 +220,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     rm -rf %{buildroot}%{_libdir}/%{name}/include/E57Format
     
     %if %{with generate_ccache}
-        CCACHE_MAXSIZE=4G ccache -c
+        CCACHE_MAXSIZE=5G ccache -c
         mkdir -p %{buildroot}%{ccache_target_dir}
         mv  %{ccache_build_dir} %{buildroot}%{ccache_target_dir}
         
