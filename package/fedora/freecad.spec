@@ -171,10 +171,11 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
                 cp -rf %{ccache_target_dir}/* %{ccache_build_dir}/
             fi
             export CCACHE_DIR="%{ccache_build_dir}"
-            export CCACHE_MAXSIZE=12G
+            export CCACHE_MAXSIZE=10G
+            export CCACHE_COMPRESSLEVEL 50
             ccache -s
             ccache -z
-            %if %{with use_ccache} && %{without generate_ccache}
+            %if %{without generate_ccache}
                 export CCACHE_READONLY=true
             %endif
             export CCACHE_BASEDIR="`pwd`"
@@ -235,7 +236,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     
     %if %{with generate_ccache} 
         export CCACHE_DIR="%{ccache_build_dir}"   
-        ccache -X 50
         CCACHE_MAXSIZE=4G ccache -c
         ccache -z
         mkdir -p %{buildroot}%{ccache_target_dir}
