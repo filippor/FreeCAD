@@ -24,7 +24,7 @@ jobs:
 - job: copr_build
   identifier: pull_request
   trigger: pull_request
-  manual_trigger: true
+  #manual_trigger: true
   notifications:
     pull_request:
       successful_build: True
@@ -66,11 +66,12 @@ jobs:
   trigger: release
   #replace owner with @freecad and the desired project before merging
   owner: filippor
-  project: freecad
+  project: tests
   targets:
     fedora-all:
-      without_opts:
-      - tests
+      with_opts:
+      - use_ccache
+      - generate_ccache
 
 
 
