@@ -34,6 +34,7 @@ jobs:
     fedora-42:
       without_opts:
       - generate_ccache
+      - debug_info
       with_opts:
       - use_ccache
       additional_repos:
@@ -42,7 +43,7 @@ jobs:
 - job: tests
   identifier: pull_request
   trigger: pull_request
-  manual_trigger: true
+  #manual_trigger: true
   #replace branch/only-packit testh with main before merginging
   branch: only-packit
   targets:

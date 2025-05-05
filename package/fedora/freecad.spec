@@ -9,6 +9,8 @@
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
 %bcond_without bundled_gtest
+%bcond_without debug_info
+
 %bcond_with generate_ccache
 %bcond_with use_ccache
 
@@ -145,8 +147,10 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 %global ccache_build_dir %{_builddir}/ccache_temp_build
 %global ccache_target_dir %{_localstatedir}/%{name}/ccache/%_arch
 
+%if %{without debug_info}
 %global debug_package %{nil}
 %global _enable_debug_packages 0
+%endif
 
 %prep
     %setup -T -a 0 -q -c -n FreeCAD
