@@ -37,7 +37,7 @@ jobs:
       with_opts:
       - use_ccache
       additional_repos:
-      - copr://packit/filippor-FreeCAD-11-pull_request
+      - copr://filippor/tests
 
 - job: tests
   identifier: pull_request
@@ -52,7 +52,7 @@ jobs:
       - generate_ccache
   notifications:
     failure_comment:
-      message: "One of the tests failed for {commit_sha}. @admin check logs {logs_url}, packit dashboard {packit_dashboard_url} and external service dashboard {external_dashboard_url}"
+      message: "One of the tests failed for {commit_sha}.  check logs {logs_url}, packit dashboard {packit_dashboard_url} "
 
 - job: copr_build
   identifier: main
