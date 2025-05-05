@@ -46,10 +46,7 @@ jobs:
   #replace branch/only-packit testh with main before merginging
   branch: only-packit
   targets:
-    fedora-42: 
-      without_opts:
-      - use_ccache
-      - generate_ccache
+    fedora-42: {}
   notifications:
     failure_comment:
       message: "One of the tests failed for {commit_sha}.  check logs {logs_url}, packit dashboard {packit_dashboard_url} "
