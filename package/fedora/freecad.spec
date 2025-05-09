@@ -6,7 +6,10 @@
 %bcond_with bundled_pycxx
 # rpmbuild --without=bundled_smesh:  don't use bundled version of Salome's Mesh
 %bcond_without bundled_smesh
-# rpmbuild --without=tests:  exclude tests in %%check
+# rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
+%bcond_with bundled_gtest
+
+# rpmbuild --without=tests   exclude tests in %%check
 %bcond_without tests
 # rpmbuild --without=debug_info don't generate package with debug info
 %bcond_without debug_info
@@ -90,7 +93,7 @@ Recommends:     python3-pysolar IfcOpenShell-python3
 # plugins and private shared libs in %%{_libdir}/freecad/lib are private;
 # prevent private capabilities being advertised in Provides/Requires
 %global plugin_exclude %( for i in %{plugins}; do  echo -n "\|$i\(Gui\)\?"; done )
-# prevent to declare Requires intenal FreeCAD libraries
+# prevent declaring Requires for internal FreeCAD libraries
 %global lib_exclude %( for i in %{exported_libs}; do echo -n "\|$i"; done )
 %global __requires_exclude_from ^%{_libdir}/%{name}/(lib|Mod)/.*
 %global __provides_exclude_from ^%{_libdir}/%{name}/Mod/.*
@@ -145,8 +148,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 
 %build
-     cd %_builddir
-
     # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
 
