@@ -9,9 +9,10 @@
 # rpmbuild --without=tests:  esclude tests in %%check
 %bcond_without tests
 # rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
-%bcond_with bundled_gtest
+%bcond_without bundled_gtest
 # rpmbuild --without=bundled_gtest:  don't build debug information
 %bcond_without debug_info
+
 
 Name:           freecad
 Epoch:          1
@@ -20,7 +21,7 @@ Release:        %autorelease
 
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
-License:        GPL-2.0-or-later
+License:        LGPL-2.0-or-later
 URL:            https://www.freecad.org/
 Source0:        {{{ git_repo_pack }}}
 #add all submodule as source
