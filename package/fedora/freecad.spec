@@ -175,7 +175,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
             mkdir -p %{ccache_build_dir}
             export CCACHE_DIR="%{ccache_build_dir}"
             export CCACHE_COMPRESSLEVEL=9
-            export CCACHE_MAXSIZE=1G
             if [ -d "%{ccache_target_dir}" ]; then
                 cp -r "%{ccache_target_dir}"/* "%{ccache_build_dir}"
             fi
@@ -233,6 +232,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     %if %{with generate_ccache}||%{with use_ccache}
         ccache -s
+        CCACHE_MAXSIZE=1G ccache -c
     %endif
 
 %install
