@@ -173,6 +173,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
         export CCACHE_BASEDIR="`pwd`"
         %if %{with generate_ccache}
             mkdir -p %{ccache_build_dir}
+            export CCACHE_REMOTE_STORAGE=`ccache --get-config remote_storage`
             export CCACHE_DIR="%{ccache_build_dir}"
             export CCACHE_COMPRESSLEVEL=9
             if [ -d "%{ccache_target_dir}" ]; then
@@ -232,7 +233,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     %if %{with generate_ccache}||%{with use_ccache}
         ccache -s
-        CCACHE_MAXSIZE=1G ccache -c
+        CCACHE_MAXSIZE=4G ccache -c
     %endif
 
 %install
