@@ -8,9 +8,7 @@
 %bcond_without bundled_smesh
 # rpmbuild --without=tests:  exclude tests in %%check
 %bcond_without tests
-# rpmbuild --without=bundled_gtest:  don't use bundled version of gtest and gmock
-%bcond_without bundled_gtest
-# rpmbuild --without=bundled_gtest:  don't build debug information
+# rpmbuild --without=debug_info don't generate package with debug info
 %bcond_without debug_info
 
 
@@ -35,10 +33,6 @@ Source3:        {{{ git_pack path=$GIT_ROOT/src/Mod/AddonManager/ dir_name="Addo
 
 %global exported_libs libOndselSolver
 
-%if %{with bundled_gtest}
- %global plugins %{plugins} libgmock libgmock_main  libgtest libgtest_main
-%endif
-
 
 # See FreeCAD-main/src/3rdParty/salomesmesh/CMakeLists.txt to find this out.
 %global bundled_smesh_version 7.7.1.0
@@ -48,7 +42,7 @@ Source3:        {{{ git_pack path=$GIT_ROOT/src/Mod/AddonManager/ dir_name="Addo
 %global bundled_ondsel_solver_version 1.0.1
 
 # Utilities
-BuildRequires:  cmake gcc-c++ gettext doxygen swig graphviz gcc-gfortran desktop-file-utils git tbb-devel
+BuildRequires:  cmake gcc-c++ gettext doxygen swig graphviz gcc-gfortran desktop-file-utils tbb-devel
 %if %{with tests}
 BuildRequires:  xorg-x11-server-Xvfb
 %if %{without bundled_gtest}
@@ -57,7 +51,8 @@ BuildRequires: gtest-devel gmock-devel
 %endif
 
 # Development Libraries
-BuildRequires:boost-devel Coin4-devel eigen3-devel freeimage-devel fmt-devel libglvnd-devel libicu-devel libkdtree++-devel libspnav-devel libXmu-devel med-devel mesa-libEGL-devel mesa-libGLU-devel netgen-mesher-devel netgen-mesher-devel-private opencascade-devel openmpi-devel pcl-devel python3 python3-devel python3-matplotlib python3-pivy python3-pybind11 python3-pyside6-devel python3-shiboken6-devel pyside6-tools qt6-qttools-static qt6-qtsvg-devel vtk-devel xerces-c-devel yaml-cpp-devel
+BuildRequires:boost-devel Coin4-devel eigen3-devel freeimage-devel fmt-devel libglvnd-devel libicu-devel libkdtree++-devel libspnav-devel libXmu-devel med-devel mesa-libEGL-devel mesa-libGLU-devel netgen-mesher-devel netgen-mesher-devel-private opencascade-devel openmpi-devel python3 python3-devel python3-matplotlib python3-pivy python3-pybind11 python3-pyside6-devel python3-shiboken6-devel pyside6-tools qt6-qttools-static qt6-qtsvg-devel vtk-devel xerces-c-devel yaml-cpp-devel
+#pcl-devel
 %if %{without bundled_smesh}
 BuildRequires:  smesh-devel
 %endif
@@ -95,7 +90,7 @@ Recommends:     python3-pysolar IfcOpenShell-python3
 # plugins and private shared libs in %%{_libdir}/freecad/lib are private;
 # prevent private capabilities being advertised in Provides/Requires
 %global plugin_exclude %( for i in %{plugins}; do  echo -n "\|$i\(Gui\)\?"; done )
-# idem per le librerie esportate (non hanno “Gui” opzionale)
+# prevent to declare Requires intenal FreeCAD libraries
 %global lib_exclude %( for i in %{exported_libs}; do echo -n "\|$i"; done )
 %global __requires_exclude_from ^%{_libdir}/%{name}/(lib|Mod)/.*
 %global __provides_exclude_from ^%{_libdir}/%{name}/Mod/.*
@@ -133,14 +128,20 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 #path that contain main FreeCAD sources for cmake
 %global _vpath_srcdir  %_builddir/%{git_name}
 %global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
-%prep
-rm -rf %{github_name}
-# extract submodule archive and move in correct path
-%setup -T -a 1 -c -q -D -n %{github_name}/src/3rdParty/ #OndselSolver
-%setup -T -a 2 -c -q -D -n %{github_name}/src/3rdParty/ #GSL
-%setup -T -a 3 -c -q -D -n %{github_name}/src/Mod/ #AddonManager
 
-%setup -T -b 0 -q -D -n %{github_name}
+%if %{without debug_info}
+%global debug_package %{nil}
+%global _enable_debug_packages 0
+%endif
+
+%prep
+    rm -rf %{github_name}
+	# extract submodule archive and move in correct path
+	%setup -T -a 1 -c -q -D -n %{github_name}/src/3rdParty/ #OndselSolver
+	%setup -T -a 2 -c -q -D -n %{github_name}/src/3rdParty/ #GSL
+	%setup -T -a 3 -c -q -D -n %{github_name}/src/Mod/ #AddonManager
+
+	%setup -T -b 0 -q -D -n %{github_name}
 
 
 %build
@@ -149,12 +150,7 @@ rm -rf %{github_name}
     # Deal with cmake projects that tend to link excessively.
     LDFLAGS='-Wl,--as-needed -Wl,--no-undefined'; export LDFLAGS
 
-    %define MEDFILE_INCLUDE_DIRS %{_includedir}/med/
-
-     %cmake \
-     %if %{with debug_info}
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-     %endif
+    %cmake \
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
         -DCMAKE_INSTALL_DATADIR=%{_datadir}/%{name} \
         -DCMAKE_INSTALL_DOCDIR=%{_docdir}/%{name} \
@@ -179,6 +175,12 @@ rm -rf %{github_name}
     %endif
     %if %{with tests}
         -DENABLE_DEVELOPER_TESTS=TRUE \
+    %if %{without bundled_gtest}
+        -DFREECAD_USE_EXTERNAL_GTEST=TRUE \
+    %else
+        -DINSTALL_GTEST=OFF \
+        -DINSTALL_GMOCK=OFF \
+    %endif
     %else
         -DENABLE_DEVELOPER_TESTS=FALSE \
     %endif
