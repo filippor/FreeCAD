@@ -233,7 +233,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
     %if %{with generate_ccache}||%{with use_ccache}
         ccache -s
-        CCACHE_MAXSIZE=4G ccache -c
+        CCACHE_MAXSIZE=2G ccache -c
     %endif
 
 %install
