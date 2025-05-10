@@ -102,7 +102,7 @@ Provides:       bundled(python-pycxx) = %{bundled_pycxx_version}
 %endif
 Provides:       bundled(libondselsolver) = %{bundled_ondsel_solver_version}
 
-Recommends:     python3-pysolar IfcOpenShell-python3
+Recommends:     python3-pysolar IfcOpenShell-python3 python3-shapely 
 
 
 
