@@ -14,11 +14,13 @@
 # rpmbuild --without=debug_info don't generate package with debug info
 %bcond_without debug_info
 
+%global github_name FreeCAD
+
 
 Name:           freecad
 Epoch:          1
 Version:        1.1.0~dev
-Release:        %autorelease
+Release:        {{{ git_repo_version }}}%autorelease
 
 Summary:        A general purpose 3D CAD modeler
 Group:          Applications/Engineering
@@ -128,8 +130,7 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     Development file for OndselSolver
 
 
-#path that contain main FreeCAD sources for cmake
-%global _vpath_srcdir  %_builddir/%{git_name}
+
 %global tests_resultdir %{_datadir}/%{name}/tests_result/%{_arch}
 
 %if %{without debug_info}
@@ -139,12 +140,12 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %prep
     rm -rf %{github_name}
-	# extract submodule archive and move in correct path
-	%setup -T -a 1 -c -q -D -n %{github_name}/src/3rdParty/ #OndselSolver
-	%setup -T -a 2 -c -q -D -n %{github_name}/src/3rdParty/ #GSL
-	%setup -T -a 3 -c -q -D -n %{github_name}/src/Mod/ #AddonManager
+    # extract submodule archive and move in correct path
+    %setup -T -a 1 -c -q -D -n %{github_name}/src/3rdParty/ #OndselSolver
+    %setup -T -a 2 -c -q -D -n %{github_name}/src/3rdParty/ #GSL
+    %setup -T -a 3 -c -q -D -n %{github_name}/src/Mod/ #AddonManager
 
-	%setup -T -b 0 -q -D -n %{github_name}
+    %setup -T -b 0 -q -D -n %{github_name}
 
 
 %build
@@ -192,7 +193,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 
 %install
-    cd %_builddir
     %cmake_install
 
     # Symlink binaries to /usr/bin
@@ -209,7 +209,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
     rm -rf %{buildroot}%{_libdir}/%{name}/%{_lib}/pkgconfig
 
 %check
-    cd %_builddir
     desktop-file-validate %{buildroot}%{_datadir}/applications/org.freecad.FreeCAD.desktop
     %{?fedora:appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml}
 
