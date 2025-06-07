@@ -1,5 +1,6 @@
 # file types to ignore
 .*
+!/.packit.yaml
 !/.clang-format
 !/.clang-tidy
 !/.git-blame-ignore-revs
@@ -25,6 +26,8 @@
 *.o
 *.orig
 *.output
+# Ignore .db files created by Qt Designer when editing .ui files
+*.db
 qrc_*.cpp
 BuildLog.htm
 cmake_install.cmake
