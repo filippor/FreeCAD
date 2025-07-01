@@ -893,7 +893,7 @@ int SketchObject::setTextAndFont(int ConstrId, std::string& newText, std::string
 {
 ;    // no need to check input data validity as this is an sketchobject managed operation.
     Base::StateLocker lock(managedoperation, true);
-    
+
     // set the changed value for the constraint
     if (this->Constraints.hasInvalidGeometry()) {
         return -6;
@@ -903,11 +903,11 @@ int SketchObject::setTextAndFont(int ConstrId, std::string& newText, std::string
         return -1;
     }
     ConstraintType type = vals[ConstrId]->Type;
-    
+
     if (type != Text) {
         return -1;
     }
-    
+
     // First we replace the old geometries by the new text.
     auto* constr = vals[ConstrId];
     if (!constr->hasElement(1)) {
@@ -917,11 +917,11 @@ int SketchObject::setTextAndFont(int ConstrId, std::string& newText, std::string
     int handleGeoId = constr->getGeoId(0);
     int firstTextGeoId = constr->getGeoId(1);
     bool handleLast = handleGeoId > firstTextGeoId;
-    
+
     // Check if text is construction or normal geos
     auto* geo1 = getGeometry(firstTextGeoId);
     bool isConstruction = GeometryFacade::getConstruction(geo1);
-    
+
     // Delete all the old text geos. Not the handle!
     std::vector<int> geoIdsToDelete;
     for (int i = 1; constr->hasElement(i); ++i) {
@@ -930,21 +930,21 @@ int SketchObject::setTextAndFont(int ConstrId, std::string& newText, std::string
             --handleGeoId; // handle line is added after all text geos.
         }
     }
-    
+
     // Clear the old geometry references from the constraint, keeping only the handle.
     constr->truncateElements(1);
 
     delGeometries(geoIdsToDelete);
-    
+
     auto* line = dynamic_cast<const Part::GeomLineSegment*>(getGeometry(handleGeoId));
     if (!line) {
         return -1;
     }
-    
-    // delGeometries invalidate constr pointer. Luckily the ConstrId is still ok because 
+
+    // delGeometries invalidate constr pointer. Luckily the ConstrId is still ok because
     // any constraint the user might have added to the text geometries, would be after the text cstr
     constr = this->Constraints.getValues()[ConstrId];
-    // Generate text geos based on new text/font : 
+    // Generate text geos based on new text/font :
     std::vector<std::unique_ptr<Part::Geometry>> newGeos;
     bool istexthe = constr->isTextHeight;
     Base::Vector3d start = line->getStartPoint();
@@ -955,12 +955,12 @@ int SketchObject::setTextAndFont(int ConstrId, std::string& newText, std::string
             Sketcher::GeometryFacade::setConstruction(newGeos[i].get(), isConstruction);
         }
     }
-    
+
     // Add the geometries to sketch
     int lastGeoid = getHighestCurveIndex();
     std::vector<Part::Geometry*> newGeosRawPtrs;
     newGeosRawPtrs.reserve(newGeos.size());
-    
+
     // Populate the raw pointer vector and release ownership from the unique_ptrs.
     for (auto& geo_ptr : newGeos) {
         if (isConstruction) {
@@ -969,11 +969,11 @@ int SketchObject::setTextAndFont(int ConstrId, std::string& newText, std::string
         // Add the raw pointer to the new vector.
         newGeosRawPtrs.push_back(geo_ptr.get());
         // Release ownership from the unique_ptr. The SketchObject will now manage this memory.
-        geo_ptr.release(); 
+        geo_ptr.release();
     }
-    newGeos.clear(); 
+    newGeos.clear();
     addGeometry(newGeosRawPtrs);
-    
+
     std::string oldText = constr->Text;
     std::string oldFont = constr->Font;
     constr->Text = newText;
@@ -984,7 +984,7 @@ int SketchObject::setTextAndFont(int ConstrId, std::string& newText, std::string
     for (int i = lastGeoid + 1; i <= newLastGeoid; ++i) {
         constr->pushBackElement(GeoElementId(i));
     }
-    
+
     int err = solve();
 
     if (err) {
@@ -3044,7 +3044,7 @@ std::unique_ptr<Constraint> SketchObject::createConstraint(
     int secondGeoId, Sketcher::PointPos secondPos, int thirdGeoId, Sketcher::PointPos thirdPos)
 {
     auto newConstr = std::make_unique<Sketcher::Constraint>();
-    
+
     newConstr->Type = constrType;
     newConstr->setElement(0, GeoElementId(firstGeoId, firstPos));
     newConstr->setElement(1, GeoElementId(secondGeoId, secondPos));
@@ -7457,7 +7457,8 @@ int SketchObject::delAllExternal()
     for (const auto& constr : constraints) {
         if (constr->getGeoId(0) > GeoEnum::RefExt
             && (constr->getGeoId(1) > GeoEnum::RefExt || constr->getGeoId(1) == GeoEnum::GeoUndef)
-            && (constr->getGeoId(2) > GeoEnum::RefExt || constr->getGeoId(2) == GeoEnum::GeoUndef)) {
+            && (constr->getGeoId(2) > GeoEnum::RefExt
+                || constr->getGeoId(2) == GeoEnum::GeoUndef)) {
             Constraint* copiedConstr = constr->clone();
 
             newConstraints.push_back(copiedConstr);

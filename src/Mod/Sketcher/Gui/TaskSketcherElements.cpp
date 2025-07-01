@@ -80,7 +80,7 @@ QT_TRANSLATE_NOOP("SketcherGui::ElementView", "Equal Constraint");
 QT_TRANSLATE_NOOP("SketcherGui::ElementView", "Symmetric Constraint");
 
 QT_TRANSLATE_NOOP("SketcherGui::ElementView", "Block Constraint");
-    
+
 QT_TRANSLATE_NOOP("SketcherGui::ElementView", "Group Constraint");
 
 QT_TRANSLATE_NOOP("SketcherGui::ElementView", "Lock Position");
