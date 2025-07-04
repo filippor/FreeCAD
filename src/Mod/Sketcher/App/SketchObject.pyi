@@ -365,7 +365,7 @@ class SketchObject(Part2DObject):
                     millimeter, angular ones as radians.
         """
         ...
-        
+
     def setTextAndFont(self, constraint: Union[int, str], text: str, font: str) -> None:
         """
         Set the text and font of a Text constraint.

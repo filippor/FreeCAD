@@ -22,7 +22,6 @@
  ***************************************************************************/
 
 
-
 #ifndef SKETCHERGUI_DrawSketchHandlerText_H
 #define SKETCHERGUI_DrawSketchHandlerText_H
 
@@ -141,7 +140,7 @@ private:
 
             commandAddShapeGeometryAndConstraints();
 
-            handleId = getHighestCurveIndex() + 1; // line is not added yet
+            handleId = getHighestCurveIndex() + 1;  // line is not added yet
 
             std::vector<Sketcher::GeoElementId> elts;
             for (int i = firstCurve; i < handleId; ++i) {
@@ -223,7 +222,7 @@ private:
 
     bool isWidgetVisible() const override
     {
-        return true; // Text tool must show the line edit to make sense
+        return true;  // Text tool must show the line edit to make sense
     };
 
     QPixmap getToolIcon() const override
@@ -347,9 +346,8 @@ template<>
 void DSHTextController::configureToolWidget()
 {
     if (!init) {  // Code to be executed only upon initialisation
-        QStringList names = {
-            QApplication::translate("TaskSketcherTool_c1_text", "Width"),
-            QApplication::translate("TaskSketcherTool_c1_text", "Height")};
+        QStringList names = {QApplication::translate("TaskSketcherTool_c1_text", "Width"),
+                             QApplication::translate("TaskSketcherTool_c1_text", "Height")};
         toolWidget->setComboboxElements(WCombobox::FirstCombo, names);
 
         toolWidget->setLineEditLabel(WLineEdit::FirstEdit,
@@ -402,7 +400,7 @@ void DSHTextController::configureToolWidget()
     }
 
     toolWidget->setLineEditText(SketcherToolDefaultWidget::LineEdit::FirstEdit,
-                                                  QString::fromStdString(handler->text));
+                                QString::fromStdString(handler->text));
 }
 
 template<>
@@ -546,7 +544,7 @@ void DSHTextController::adaptParameters(Base::Vector2d onSketchPos)
                                             Base::Unit::Angle);
                 }
             }
-            
+
             thirdParam->setPoints(start, end);
             fourthParam->setPoints(start, Base::Vector3d());
             fourthParam->setLabelRange(range);

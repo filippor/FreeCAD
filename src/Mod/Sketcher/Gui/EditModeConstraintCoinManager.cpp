@@ -197,7 +197,8 @@ Restart:
                 || (Constr->getGeoId(1) != GeoEnum::GeoUndef
                     && (Constr->getGeoId(1) < -extGeoCount || Constr->getGeoId(1) >= intGeoCount))
                 || (Constr->getGeoId(2) != GeoEnum::GeoUndef
-                    && (Constr->getGeoId(2) < -extGeoCount || Constr->getGeoId(2) >= intGeoCount))) {
+                    && (Constr->getGeoId(2) < -extGeoCount
+                        || Constr->getGeoId(2) >= intGeoCount))) {
                 // Constraint can refer to non-existent geometry during undo/redo
                 continue;
             }
@@ -209,11 +210,14 @@ Restart:
                                   // vertical position.
                 case Vertical:    // write the new position of the Vertical constraint
                 {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
-                    bool alignment = Constr->Type != Block && Constr->getGeoId(1) != GeoEnum::GeoUndef;
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
+                    bool alignment =
+                        Constr->Type != Block && Constr->getGeoId(1) != GeoEnum::GeoUndef;
 
                     // get the geometry
-                    const Part::Geometry* geo = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
+                    const Part::Geometry* geo =
+                        geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
 
                     if (!alignment) {
                         // Vertical & Horiz can only be a GeomLineSegment, but Blocked can be
@@ -372,7 +376,8 @@ Restart:
                         translation->translation = SbVec3f(relpos.x, relpos.y, 0);
                     }
                     else {
-                        assert(Constr->getGeoId(1) >= -extGeoCount && Constr->getGeoId(1) < intGeoCount);
+                        assert(Constr->getGeoId(1) >= -extGeoCount
+                               && Constr->getGeoId(1) < intGeoCount);
                         assert(Constr->getPosId(0) != Sketcher::PointPos::none
                                && Constr->getPosId(1) != Sketcher::PointPos::none);
 
@@ -418,11 +423,15 @@ Restart:
                     }
                 } break;
                 case Perpendicular: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
-                    assert(Constr->getGeoId(1) >= -extGeoCount && Constr->getGeoId(1) < intGeoCount);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
+                    assert(Constr->getGeoId(1) >= -extGeoCount
+                           && Constr->getGeoId(1) < intGeoCount);
                     // get the geometry
-                    const Part::Geometry* geo1 = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
-                    const Part::Geometry* geo2 = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(1));
+                    const Part::Geometry* geo1 =
+                        geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
+                    const Part::Geometry* geo2 =
+                        geolistfacade.getGeometryFromGeoId(Constr->getGeoId(1));
                     Base::Vector3d midpos1, dir1, norm1;
                     Base::Vector3d midpos2, dir2, norm2;
                     bool twoIcons = false;  // a very local flag. It's set to true to indicate that
@@ -560,11 +569,15 @@ Restart:
                 } break;
                 case Parallel:
                 case Equal: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
-                    assert(Constr->getGeoId(1) >= -extGeoCount && Constr->getGeoId(1) < intGeoCount);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
+                    assert(Constr->getGeoId(1) >= -extGeoCount
+                           && Constr->getGeoId(1) < intGeoCount);
                     // get the geometry
-                    const Part::Geometry* geo1 = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
-                    const Part::Geometry* geo2 = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(1));
+                    const Part::Geometry* geo1 =
+                        geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
+                    const Part::Geometry* geo2 =
+                        geolistfacade.getGeometryFromGeoId(Constr->getGeoId(1));
 
                     Base::Vector3d midpos1, dir1, norm1;
                     Base::Vector3d midpos2, dir2, norm2;
@@ -892,7 +905,8 @@ Restart:
                 case Distance:
                 case DistanceX:
                 case DistanceY: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
 
                     double helperStartAngle1 = 0.;  // for arc helpers
                     double helperStartAngle2 = 0.;
@@ -1028,7 +1042,8 @@ Restart:
                         auto geo1 = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
                         auto geo2 = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(1));
 
-                        if (isArcOfCircle(*geo1) && Constr->getPosId(0) == Sketcher::PointPos::none) {
+                        if (isArcOfCircle(*geo1)
+                            && Constr->getPosId(0) == Sketcher::PointPos::none) {
                             auto arc = static_cast<const Part::GeomArcOfCircle*>(geo1);  // NOLINT
                             radius1 = arc->getRadius();
                             center1 = arc->getCenter();
@@ -1055,7 +1070,8 @@ Restart:
                                 numPoints++;
                             }
                         }
-                        if (isArcOfCircle(*geo2) && Constr->getPosId(1) == Sketcher::PointPos::none) {
+                        if (isArcOfCircle(*geo2)
+                            && Constr->getPosId(1) == Sketcher::PointPos::none) {
                             auto arc = static_cast<const Part::GeomArcOfCircle*>(geo2);  // NOLINT
                             radius2 = arc->getRadius();
                             center2 = arc->getCenter();
@@ -1127,15 +1143,16 @@ Restart:
                 case PointOnObject:
                 case Tangent:
                 case SnellsLaw: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
-                    assert(Constr->getGeoId(1) >= -extGeoCount && Constr->getGeoId(1) < intGeoCount);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
+                    assert(Constr->getGeoId(1) >= -extGeoCount
+                           && Constr->getGeoId(1) < intGeoCount);
 
                     Base::Vector3d pos, relPos;
                     if (Constr->Type == PointOnObject || Constr->Type == SnellsLaw
                         || (Constr->Type == Tangent && Constr->getGeoId(2) != GeoEnum::GeoUndef)
                         ||  // Tangency via point
-                        (Constr->Type == Tangent
-                         && Constr->getPosId(0) != Sketcher::PointPos::none)
+                        (Constr->Type == Tangent && Constr->getPosId(0) != Sketcher::PointPos::none)
                         // endpoint-to-curve or endpoint-to-endpoint tangency
                     ) {
 
@@ -1167,7 +1184,8 @@ Restart:
 
                         // TODO: Check substitution
                         // Base::Vector3d norm =
-                        // getSolvedSketch().calculateNormalAtPoint(Constr->getGeoId(1), pos.x, pos.y);
+                        // getSolvedSketch().calculateNormalAtPoint(Constr->getGeoId(1), pos.x,
+                        // pos.y);
                         norm.Normalize();
                         Base::Vector3d dir = norm;
                         dir.RotateZ(-pi / 2.0);
@@ -1341,11 +1359,15 @@ Restart:
                     }
                 } break;
                 case Symmetric: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
-                    assert(Constr->getGeoId(1) >= -extGeoCount && Constr->getGeoId(1) < intGeoCount);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
+                    assert(Constr->getGeoId(1) >= -extGeoCount
+                           && Constr->getGeoId(1) < intGeoCount);
 
-                    Base::Vector3d pnt1 = geolistfacade.getPoint(Constr->getGeoId(0), Constr->getPosId(0));
-                    Base::Vector3d pnt2 = geolistfacade.getPoint(Constr->getGeoId(1), Constr->getPosId(1));
+                    Base::Vector3d pnt1 =
+                        geolistfacade.getPoint(Constr->getGeoId(0), Constr->getPosId(0));
+                    Base::Vector3d pnt2 =
+                        geolistfacade.getPoint(Constr->getGeoId(1), Constr->getPosId(1));
 
                     SbVec3f p1(pnt1.x, pnt1.y, zConstrH);
                     SbVec3f p2(pnt2.x, pnt2.y, zConstrH);
@@ -1371,9 +1393,11 @@ Restart:
                     translation->translation = (p1 + p2) / 2;
                 } break;
                 case Angle: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
-                    assert((Constr->getGeoId(1) >= -extGeoCount && Constr->getGeoId(1) < intGeoCount)
-                           || Constr->getGeoId(1) == GeoEnum::GeoUndef);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
+                    assert(
+                        (Constr->getGeoId(1) >= -extGeoCount && Constr->getGeoId(1) < intGeoCount)
+                        || Constr->getGeoId(1) == GeoEnum::GeoUndef);
 
                     SbVec3f p0;
                     double distance = Constr->LabelDistance;
@@ -1533,7 +1557,8 @@ Restart:
 
                 } break;
                 case Diameter: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
 
                     Base::Vector3d pnt1(0., 0., 0.), pnt2(0., 0., 0.);
                     double helperStartAngle = 0.;
@@ -1543,7 +1568,8 @@ Restart:
                         break;
                     }
 
-                    const Part::Geometry* geo = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
+                    const Part::Geometry* geo =
+                        geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
 
                     if (geo->is<Part::GeomArcOfCircle>()) {
                         auto* arc = static_cast<const Part::GeomArcOfCircle*>(geo);
@@ -1607,7 +1633,8 @@ Restart:
                 } break;
                 case Weight:
                 case Radius: {
-                    assert(Constr->getGeoId(0) >= -extGeoCount && Constr->getGeoId(0) < intGeoCount);
+                    assert(Constr->getGeoId(0) >= -extGeoCount
+                           && Constr->getGeoId(0) < intGeoCount);
 
                     Base::Vector3d pnt1(0., 0., 0.), pnt2(0., 0., 0.);
                     double helperStartAngle = 0.;
@@ -1616,7 +1643,8 @@ Restart:
                     if (Constr->getGeoId(0) == GeoEnum::GeoUndef) {
                         break;
                     }
-                    const Part::Geometry* geo = geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
+                    const Part::Geometry* geo =
+                        geolistfacade.getGeometryFromGeoId(Constr->getGeoId(0));
 
                     if (geo->is<Part::GeomArcOfCircle>()) {
                         auto* arc = static_cast<const Part::GeomArcOfCircle*>(geo);
@@ -2145,8 +2173,10 @@ void EditModeConstraintCoinManager::rebuildConstraintNodes(
                 sep->addChild(new SoInfo());
 
                 if ((*it)->Type == Tangent) {
-                    const Part::Geometry* geo1 = geolistfacade.getGeometryFromGeoId((*it)->getGeoId(0));
-                    const Part::Geometry* geo2 = geolistfacade.getGeometryFromGeoId((*it)->getGeoId(1));
+                    const Part::Geometry* geo1 =
+                        geolistfacade.getGeometryFromGeoId((*it)->getGeoId(0));
+                    const Part::Geometry* geo2 =
+                        geolistfacade.getGeometryFromGeoId((*it)->getGeoId(1));
                     if (!geo1 || !geo2) {
                         Base::Console().developerWarning(
                             "EditModeConstraintCoinManager",
@@ -2480,8 +2510,10 @@ void EditModeConstraintCoinManager::drawConstraintIcons(const GeoListFacade& geo
         switch (constraint->Type) {
 
             case Tangent: {  // second icon is available only for collinear line segments
-                const Part::Geometry* geo1 = geolistfacade.getGeometryFromGeoId(constraint->getGeoId(0));
-                const Part::Geometry* geo2 = geolistfacade.getGeometryFromGeoId(constraint->getGeoId(1));
+                const Part::Geometry* geo1 =
+                    geolistfacade.getGeometryFromGeoId(constraint->getGeoId(0));
+                const Part::Geometry* geo2 =
+                    geolistfacade.getGeometryFromGeoId(constraint->getGeoId(1));
                 if (geo1 && geo1->is<Part::GeomLineSegment>() && geo2
                     && geo2->is<Part::GeomLineSegment>()) {
                     multipleIcons = true;
