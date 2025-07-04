@@ -10139,7 +10139,7 @@ void CmdSketcherConstrainGroup::activated(int iMsg)
         Sketcher::PointPos posId;
         getIdsFromName(subName, Obj, geoId, posId);
 
-        bool alreadyAdded = std::any_of(elts.begin(), elts.end(), 
+        bool alreadyAdded = std::any_of(elts.begin(), elts.end(),
                                 [geoId](const Sketcher::GeoElementId& elem) {
                                     return elem.GeoId == geoId;
                                 });
@@ -10202,16 +10202,16 @@ bool SketcherGui::addListConstraint(Sketcher::SketchObject* Obj,
                        std::vector<Sketcher::GeoElementId>& elts,
                        const std::string& constraintType,
                        Base::Vector2d frame_p1,
-                       Base::Vector2d frame_p2, 
+                       Base::Vector2d frame_p2,
                        bool isTextHeight,
                        const std::string& text,
                        const std::string& font)
 {
-    
+
     std::vector<int> geoIdsWithInternalGeos;
     // The lambda defines the condition for REMOVAL.
     // It returns 'true' if an element should be erased.
-    auto new_end = std::remove_if(elts.begin(), elts.end(), 
+    auto new_end = std::remove_if(elts.begin(), elts.end(),
         [&](const Sketcher::GeoElementId& element) -> bool {
             int geoId = element.GeoId;
 
@@ -10228,19 +10228,19 @@ bool SketcherGui::addListConstraint(Sketcher::SketchObject* Obj,
                 // Collect the ID for later processing.
                 geoIdsWithInternalGeos.push_back(geoId);
             }
-            
+
             // If we reached here, the element is valid and should be kept.
             return false; // Do not remove
     });
 
     // Actually erase the elements that were moved to the end.
     elts.erase(new_end, elts.end());
-    
+
     if (elts.size() < 2) {
         Base::Console().warning("Cannot create %s constraint: minimum 2 geometries.\n", constraintType.c_str());
         return false;
     }
-    
+
     if ((frame_p1 - frame_p2).Length() < Precision::Confusion()) {
         // --- 1. Calculate Bounding Box ---
         Bnd_Box totalBBox;
@@ -10307,7 +10307,7 @@ bool SketcherGui::addListConstraint(Sketcher::SketchObject* Obj,
         Base::Console().error("Unsupported list constraint type: %s\n", constraintType.c_str());
         return false;
     }
-    
+
     // We remove the internal alignment of the geometries that were grouped.
     std::sort(geoIdsWithInternalGeos.begin(), geoIdsWithInternalGeos.end(), std::greater<>());
     for (auto& geoId : geoIdsWithInternalGeos) {

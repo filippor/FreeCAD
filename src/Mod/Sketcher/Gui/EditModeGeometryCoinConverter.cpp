@@ -200,10 +200,11 @@ void EditModeGeometryCoinConverter::convert(const Sketcher::GeoListFacade& geoli
             convert<Part::GeomLineSegment,
                     EditModeGeometryCoinConverter::PointsMode::InsertStartEnd,
                     EditModeGeometryCoinConverter::CurveMode::StartEndPointsOnly,
-                    EditModeGeometryCoinConverter::AnalyseMode::BoundingBoxMagnitude>(geom,
-                                                                                      GeoId,
-                                                                                      subLayerId,
-                                                                                      isGroupMember);
+                    EditModeGeometryCoinConverter::AnalyseMode::BoundingBoxMagnitude>(
+                geom,
+                GeoId,
+                subLayerId,
+                isGroupMember);
             setTracking(GeoId,
                         coinLayer,
                         EditModeGeometryCoinConverter::PointsMode::InsertStartEnd,
@@ -216,10 +217,11 @@ void EditModeGeometryCoinConverter::convert(const Sketcher::GeoListFacade& geoli
             convert<Part::GeomConic,
                     EditModeGeometryCoinConverter::PointsMode::InsertMidOnly,
                     EditModeGeometryCoinConverter::CurveMode::ClosedCurve,
-                    EditModeGeometryCoinConverter::AnalyseMode::BoundingBoxMagnitude>(geom,
-                                                                                      GeoId,
-                                                                                      subLayerId,
-                                                                                      isGroupMember);
+                    EditModeGeometryCoinConverter::AnalyseMode::BoundingBoxMagnitude>(
+                geom,
+                GeoId,
+                subLayerId,
+                isGroupMember);
             setTracking(GeoId,
                         coinLayer,
                         EditModeGeometryCoinConverter::PointsMode::InsertMidOnly,
@@ -232,10 +234,11 @@ void EditModeGeometryCoinConverter::convert(const Sketcher::GeoListFacade& geoli
             convert<Part::GeomArcOfConic,
                     EditModeGeometryCoinConverter::PointsMode::InsertStartEndMid,
                     EditModeGeometryCoinConverter::CurveMode::OpenCurve,
-                    EditModeGeometryCoinConverter::AnalyseMode::BoundingBoxMagnitude>(geom,
-                                                                                      GeoId,
-                                                                                      subLayerId,
-                                                                                      isGroupMember);
+                    EditModeGeometryCoinConverter::AnalyseMode::BoundingBoxMagnitude>(
+                geom,
+                GeoId,
+                subLayerId,
+                isGroupMember);
             setTracking(GeoId,
                         coinLayer,
                         EditModeGeometryCoinConverter::PointsMode::InsertStartEndMid,
@@ -250,8 +253,10 @@ void EditModeGeometryCoinConverter::convert(const Sketcher::GeoListFacade& geoli
                     EditModeGeometryCoinConverter::PointsMode::InsertStartEnd,
                     EditModeGeometryCoinConverter::CurveMode::OpenCurve,
                     EditModeGeometryCoinConverter::AnalyseMode::
-                        BoundingBoxMagnitudeAndBSplineCurvature>(geom, GeoId, subLayerId,
-                                                                                      isGroupMember);
+                        BoundingBoxMagnitudeAndBSplineCurvature>(geom,
+                                                                 GeoId,
+                                                                 subLayerId,
+                                                                 isGroupMember);
             setTracking(GeoId,
                         coinLayer,
                         EditModeGeometryCoinConverter::PointsMode::InsertStartEnd,

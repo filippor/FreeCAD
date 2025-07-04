@@ -1492,7 +1492,7 @@ void ViewProviderSketch::initDragging(int geoId, Sketcher::PointPos pos, Gui::Vi
         if (geoIdi < 0) {
             continue; //skip externals
         }
-        
+
         // If in a group, we drag the group handle instead.
         geoIdi = getSketchObject()->getGroupHandleIfInGroup(geoIdi);
 
