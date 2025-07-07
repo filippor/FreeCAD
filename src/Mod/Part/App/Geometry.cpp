@@ -7285,33 +7285,45 @@ void transformAndConvertToGeometry(std::vector<std::unique_ptr<Part::Geometry>>&
         for (TopExp_Explorer explorer(performer.Shape(), TopAbs_EDGE); explorer.More();
              explorer.Next()) {
             Standard_Real first, last;
-            Handle(Geom_Curve) curve =
-                BRep_Tool::Curve(TopoDS::Edge(explorer.Current()), first, last);
+            const TopoDS_Edge& edge = TopoDS::Edge(explorer.Current());
+            Handle(Geom_Curve) curve = BRep_Tool::Curve(edge, first, last);
             if (curve.IsNull()) {
                 continue;
             }
 
-            if (curve->IsKind(STANDARD_TYPE(Geom_BezierCurve))) {
-                Handle(Geom_TrimmedCurve) tcurve = new Geom_TrimmedCurve(curve, first, last, true, false);
-                auto* geomcurve = new Part::GeomTrimmedCurve(tcurve);
-                if (auto* bspline = geomcurve->toBSpline(first, last)) {
-                    geos.emplace_back(bspline);
-                }
+            std::unique_ptr<Part::GeomCurve> newGeo;
+
+            if (BRep_Tool::IsClosed(edge)) {
+                newGeo = Part::makeFromCurve(curve);
             }
             else {
-                std::unique_ptr<Part::GeomCurve> newGeo(Part::makeFromCurve(curve));
-                if (!newGeo) {
-                    Base::Console().warning(
-                        "transformAndConvertToGeometry: Could not create geometry from curve.\n");
-                    continue;
+                if (curve->IsKind(STANDARD_TYPE(Geom_TrimmedCurve))) {
+                    Handle(Geom_TrimmedCurve) trc = Handle(Geom_TrimmedCurve)::DownCast(curve);
+                    curve = trc->BasisCurve();
                 }
 
-                try {
-                    geos.emplace_back(newGeo->toBSpline(first, last));
+                if (curve->IsKind(STANDARD_TYPE(Geom_BezierCurve))) {
+                    Handle(Geom_TrimmedCurve) tcurve =
+                        new Geom_TrimmedCurve(curve, first, last, true, false);
+                    Part::GeomTrimmedCurve geomcurve(tcurve);
+                    newGeo.reset(geomcurve.toBSpline(first, last));
                 }
-                catch (const Base::Exception& e) {
-                    Base::Console().warning("BSpline conversion failed: %s\n", e.what());
+                else {
+                    newGeo = Part::makeFromTrimmedCurve(curve, first, last);
                 }
+            }
+
+            if (!newGeo) {
+                Base::Console().warning(
+                    "transformAndConvertToGeometry: Could not create geometry from curve.\n");
+                continue;
+            }
+
+            try {
+                geos.emplace_back(std::move(newGeo));
+            }
+            catch (const Base::Exception& e) {
+                Base::Console().warning("BSpline conversion failed: %s\n", e.what());
             }
         }
     }
