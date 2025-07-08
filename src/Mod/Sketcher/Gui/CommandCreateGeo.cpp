@@ -1349,7 +1349,8 @@ CmdSketcherCreateText::CmdSketcherCreateText()
         "Creates text geometries controlled by a Text constraint.\n"
         "To Edit: Double-click the Text constraint to change the text content and font.\n"
         "To Position/Size: Apply constraints to the group's construction line.\n"
-        "Note: While the Text constraint is active, any constraints applied directly to the text geometries will be ignored.\n");
+        "Note: While the Text constraint is active, any constraints applied directly to the text "
+        "geometries will be ignored.\n");
     sWhatsThis = "Sketcher_CreateText";
     sStatusTip = sToolTipText;
     sPixmap = "Sketcher_CreateText";
