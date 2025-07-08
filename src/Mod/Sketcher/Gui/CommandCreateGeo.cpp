@@ -1346,10 +1346,10 @@ CmdSketcherCreateText::CmdSketcherCreateText()
     sGroup = "Sketcher";
     sMenuText = QT_TR_NOOP("Text");
     sToolTipText = QT_TR_NOOP(
-        "Creates text geometries that are grouped by a Text constraint.\n"
-        "You can edit the text and font by double-clicking on the Text constraint."
-        "The position and size of the text can be defined by constraining the construction line."
-        "Constraints applied to text edges are ignored as long as the Text constraint is here.");
+        "Creates text geometries controlled by a Text constraint.\n"
+        "To Edit: Double-click the Text constraint to change the text content and font.\n"
+        "To Position/Size: Apply constraints to the group's construction line.\n"
+        "Note: While the Text constraint is active, any constraints applied directly to the text geometries will be ignored.\n");
     sWhatsThis = "Sketcher_CreateText";
     sStatusTip = sToolTipText;
     sPixmap = "Sketcher_CreateText";
