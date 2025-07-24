@@ -647,7 +647,7 @@ void Model::updateSlot()
 
     auto rectangle = (*theGraph)[currentVertex].rectangle.get();
     rectangle->setRect(-rowPadding, 0.0, rowPadding, rowHeight); //calculate actual length later.
-    rectangle->setTransform(QTransform::fromTranslate(0, rowHeight * static_cast<qreal>(currentRow)));
+    rectangle->setTransform(QTransform::fromTranslate(0, rowHeight * currentRow));
     rectangle->setBackgroundBrush(backgroundBrushes[currentRow % backgroundBrushes.size()]);
 
     auto point = (*theGraph)[currentVertex].point.get();
