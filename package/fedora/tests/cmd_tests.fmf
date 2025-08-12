@@ -1,3 +1,8 @@
+prepare:
+  - name: packages
+    how: install
+    package:
+    - IfcOpenShell-python3
 /tests:
   /TestAddonManagerApp   :
     test: /usr/bin/FreeCADCmd -t  TestAddonManagerApp
