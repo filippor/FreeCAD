@@ -301,4 +301,3 @@ Development file for OndselSolver
     %{_includedir}/OndselSolver/*
 
 %changelog
-
