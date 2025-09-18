@@ -22,9 +22,7 @@ jobs:
   notifications:
     pull_request:
       successful_build: True
-  branch: main
-  additional_repos:
-    - copr://bpostle/IfcOpenShell
+  branch: only-packit
   targets:
     fedora-stable:
       without_opts:
@@ -36,14 +34,11 @@ jobs:
 - job: tests
   identifier: pull_request
   trigger: pull_request
-  branch: main
+  branch: only-packit
   targets:
     fedora-latest-stable:
       without_opts:
       - debug_info
-  tf_post_install_script: |
-    sudo dnf copr enable bpostle/IfcOpenShell
-    sudo dnf install IfcOpenShell-python3
   fmf_path: package/fedora/tests
 
 - job: copr_build
@@ -51,8 +46,6 @@ jobs:
   trigger: commit
   manual_trigger: true
   branch: main
-  additional_repos:
-    - copr://bpostle/IfcOpenShell
   owner: freecad
   project: nightly
 
@@ -61,8 +54,6 @@ jobs:
   trigger: release
   owner: freecad
   project: freecad
-  additional_repos:
-    - copr://bpostle/IfcOpenShell
   targets:
     fedora-all:
       without_opts:
