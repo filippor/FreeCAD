@@ -63,9 +63,9 @@ BuildRequires:  zipios++-devel
 BuildRequires:  python3-pycxx-devel
 %endif
 # For appdata
-%if 0%{?fedora}
-BuildRequires:  libappstream-glib
-%endif
+#%if 0%{?fedora}
+#BuildRequires:  libappstream-glib
+#%endif
 
 # Packages separated because they are noarch, but not optional so require them
 # here.
@@ -276,14 +276,12 @@ Development file for OndselSolver
 
 %post
     /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-    /usr/bin/update-desktop-database &> /dev/null || :
     /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 
 
 %postun
     if [ $1 -eq 0 ] ; then
         /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-        /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
     fi
     /usr/bin/update-desktop-database &> /dev/null || :
     /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
