@@ -27,10 +27,7 @@ jobs:
     - copr://bpostle/IfcOpenShell
   manual_trigger: true
   targets:
-    fedora-stable:
-      without_opts:
-      - debug_info
-    fedora-development:
+    fedora-latest-stable:
       without_opts:
       - debug_info
 
