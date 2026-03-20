@@ -12,6 +12,10 @@ actions:
     - bash -c 'git ls-files --recurse-submodules | tar  -caf freecad-sources.tar.gz -T-'
     - echo -n 'freecad-sources.tar.gz'
 downstream_package_name: freecad
+upstream_tag_exclude: '.*'
+notifications:
+  pull_request:
+    successful_build: false
 additional_packages:
     - python3
 
@@ -35,7 +39,6 @@ jobs:
   identifier: pull_request
   trigger: pull_request
   branch: main
-  manual_trigger: true
   targets:
     fedora-latest-stable:
       without_opts:
@@ -45,7 +48,6 @@ jobs:
 - job: copr_build
   identifier: main
   trigger: commit
-  manual_trigger: true
   branch: main
   additional_repos:
     - copr://bpostle/IfcOpenShell
@@ -55,7 +57,6 @@ jobs:
   identifier: main
   trigger: commit
   branch: main
-  manual_trigger: true
   targets:
     fedora-latest-stable:
       without_opts:
