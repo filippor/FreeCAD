@@ -1,6 +1,6 @@
 # Some configuration options for other environments
 # rpmbuild --without=bundled_zipios: don't use bundled version of zipios++
-%bcond_without  bundled_zipios
+%bcond_with  bundled_zipios
 # rpmbuild --with=bundled_pycxx:  use bundled version of pycxx
 %bcond_with bundled_pycxx
 # rpmbuild --without=bundled_smesh:  don't use bundled version of Salome's Mesh
