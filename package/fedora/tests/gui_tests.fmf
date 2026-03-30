@@ -69,4 +69,6 @@
         test: wlheadless-run -- /usr/bin/FreeCAD  -t  Menu.MenuCreateCases
     /GuiDocument           :
         test: wlheadless-run -- /usr/bin/FreeCAD  -t  GuiDocument
+    /TestCoinNodeSnapshots :
+        test: FC_VISUAL_OUT_DIR="${TMT_TEST_DATA:-/tmp/FreeCADTesting}/CoinNodeSnapshots" wlheadless-run --width=1024 --height=768 -- /usr/bin/FreeCAD  -t  TestCoinNodeSnapshots
 
