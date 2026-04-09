@@ -2,10 +2,29 @@ summary:
     Run All FreeCAD python tests
 prepare:
     how: install
-    package: 
+    package:
     - xwayland-run
     - weston
 discover:
-    how: fmf
+    how: shell
+    tests:
+    - name: /build_time_tests/ctest
+      test: |
+        cat /usr/share/freecad/tests_result/$(uname -m)/ctest.result
+        if [ -f /usr/share/freecad/tests_result/$(uname -m)/ctest.failed ]; then
+            exit 1
+        fi
+      duration: 5m
+    - name: /smoke_test
+      test: /usr/bin/FreeCADCmd -v
+      duration: 1m
+    - name: /cmd_tests
+      test: python3 ./run_registered_tests.py --suite cmd
+      path: /
+      duration: 2h
+    - name: /gui_tests
+      test: python3 ./run_registered_tests.py --suite gui
+      path: /
+      duration: 2h
 execute:
     how: tmt
