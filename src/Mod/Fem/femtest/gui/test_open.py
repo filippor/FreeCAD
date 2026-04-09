@@ -147,9 +147,15 @@ class TestObjectOpen(unittest.TestCase):
             VPConstraintElectromagnetic,
         )
 
+        # Old test files may keep the legacy object name.
+        if hasattr(doc, "ConstraintElectromagnetic"):
+            constraint_electromagnetic_obj = doc.ConstraintElectromagnetic
+        else:
+            constraint_electromagnetic_obj = doc.ConstraintElectrostaticPotential
+
         self.assertEqual(
             VPConstraintElectromagnetic,
-            doc.ConstraintElectromagnetic.ViewObject.Proxy.__class__,
+            constraint_electromagnetic_obj.ViewObject.Proxy.__class__,
         )
 
         from femviewprovider.view_constraint_flowvelocity import VPConstraintFlowVelocity
