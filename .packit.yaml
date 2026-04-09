@@ -39,6 +39,9 @@ jobs:
   identifier: pull_request
   trigger: pull_request
   branch: main
+  actions:
+    post-upstream-clone:
+      - /usr/bin/python3 package/fedora/tests/generate_tests_fmf.py --mode both --gui-freecad /usr/bin/FreeCAD --cmd-freecad /usr/bin/FreeCADCmd --gui-output package/fedora/tests/gui_tests.fmf --cmd-output package/fedora/tests/cmd_tests.fmf
   targets:
     fedora-latest-stable:
       without_opts:
@@ -57,6 +60,9 @@ jobs:
   identifier: main
   trigger: commit
   branch: main
+  actions:
+    post-upstream-clone:
+      - /usr/bin/python3 package/fedora/tests/generate_tests_fmf.py --mode both --gui-freecad /usr/bin/FreeCAD --cmd-freecad /usr/bin/FreeCADCmd --gui-output package/fedora/tests/gui_tests.fmf --cmd-output package/fedora/tests/cmd_tests.fmf
   targets:
     fedora-latest-stable:
       without_opts:
