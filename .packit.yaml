@@ -48,6 +48,20 @@ jobs:
       - debug_info
   fmf_path: package/fedora/tests
 
+- job: tests
+  identifier: generation-no-build
+  trigger: pull_request
+  branch: main
+  skip_build: true
+  actions:
+    post-upstream-clone:
+      - bash -lc 'echo PACKIT_GENERATION_START && /usr/bin/python3 package/fedora/tests/generate_tests_fmf.py --mode both --gui-freecad /usr/bin/FreeCAD --cmd-freecad /usr/bin/FreeCADCmd --gui-output package/fedora/tests/gui_tests.fmf --cmd-output package/fedora/tests/cmd_tests.fmf && ls -l package/fedora/tests/gui_tests.fmf package/fedora/tests/cmd_tests.fmf && echo PACKIT_GENERATION_DONE'
+  targets:
+    fedora-latest-stable:
+      without_opts:
+      - debug_info
+  fmf_path: package/fedora/tests
+
 - job: copr_build
   identifier: main
   trigger: commit
