@@ -39,7 +39,7 @@ jobs:
       without_opts:
       - debug_info
   fmf_url: https://github.com/filippor/FreeCAD-fedora-packaging.git
-  fmf_ref: main
+  fmf_ref: dev
   
 
 - job: copr_build
@@ -57,7 +57,7 @@ jobs:
       without_opts:
       - debug_info
   fmf_url: https://github.com/filippor/FreeCAD-fedora-packaging.git
-  fmf_ref: main
+  fmf_ref: dev
   owner: '@freecad'
   project: nightly
 
