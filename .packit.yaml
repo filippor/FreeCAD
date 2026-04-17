@@ -26,7 +26,13 @@ jobs:
       successful_build: false
   branch: main
   targets:
-    fedora-latest-stable:
+    fedora-latest-stable-x86_64:
+      without_opts:
+      - debug_info
+    fedora-44-x86_64:
+      without_opts:
+      - debug_info
+    fedora-latest-stable-aarch64:
       without_opts:
       - debug_info
 
@@ -35,7 +41,13 @@ jobs:
   trigger: pull_request
   branch: main
   targets:
-    fedora-latest-stable:
+    fedora-latest-stable-x86_64:
+      without_opts:
+      - debug_info
+    fedora-44-x86_64:
+      without_opts:
+      - debug_info
+    fedora-latest-stable-aarch64:
       without_opts:
       - debug_info
   fmf_url: https://github.com/filippor/FreeCAD-fedora-packaging.git
