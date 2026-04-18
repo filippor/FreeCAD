@@ -76,6 +76,9 @@ jobs:
 - job: copr_build
   identifier: release
   trigger: release
+  actions:
+    run-condition:
+      - bash -c '! git tag --points-at HEAD | grep -q "^weekly"'
   owner: '@freecad'
   project: freecad
   targets:
