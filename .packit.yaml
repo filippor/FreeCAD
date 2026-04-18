@@ -6,7 +6,7 @@ files_to_sync:
 actions:
   post-upstream-clone:
     - rm -rf .packit_rpm
-    - git clone https://github.com/filippor/FreeCAD-fedora-packaging.git .packit_rpm
+    - git clone -b dev https://github.com/filippor/FreeCAD-fedora-packaging.git .packit_rpm
   create-archive:
     - bash -c '.packit_rpm/scripts/create-archive.sh'
 downstream_package_name: freecad
