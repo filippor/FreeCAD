@@ -18,3 +18,6 @@
 // Git relevant stuff
 #define FCRepositoryHash   "61385463172b4f61f05952b169a04c3d2a240374"
 #define FCRepositoryBranch "external-build"
+// Git relevant stuff
+#define FCRepositoryHash   "ef05ccf619b9a4398c60e7c3d2e676c8524007c2"
+#define FCRepositoryBranch "external-build"

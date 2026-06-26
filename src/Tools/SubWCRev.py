@@ -530,7 +530,7 @@ def main():
             inp = open("%s/src/Build/Version.h.in" % (bindir))
             lines = inp.readlines()
             inp.close()
-            ##lines = i.writeVersion(lines) # this source package already has git info, we do nothing here # this source package already has git info, we do nothing here
+            ###lines = i.writeVersion(lines) # this source package already has git info, we do nothing here # this source package already has git info, we do nothing here # this source package already has git info, we do nothing here
             out = open("%s/src/Build/Version.h.out" % (bindir), "w")
             out.writelines(lines)
             out.write("\n")
