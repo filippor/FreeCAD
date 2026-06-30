@@ -8,7 +8,19 @@
 // Displayed Copyright Year (i.e. build year)
 #define FCCopyrightYear ${PACKAGE_COPYRIGHT_YEAR}
 // test: $Format:Hash (%H), Date: %ci$
-#define FCRevision      "${PACKAGE_WCREF}"      //Highest committed revision number
-#define FCRevisionDate  "${PACKAGE_WCDATE}"     //Date of highest committed revision
-#define FCRepositoryURL "${PACKAGE_WCURL}"      //Repository URL of the working copy
+#define FCRevision      "47463 +6 (Git)"      //Highest committed revision number
+#define FCRevisionDate  "2026/06/26 08:37:34"     //Date of highest committed revision
+#define FCRepositoryURL "Unknown"      //Repository URL of the working copy
 
+// Git relevant stuff
+#define FCRepositoryHash   "3c1c21d4fc33facd15c39a46d6f8c4792465a42b"
+#define FCRepositoryBranch "external-build"
+// Git relevant stuff
+#define FCRepositoryHash   "61385463172b4f61f05952b169a04c3d2a240374"
+#define FCRepositoryBranch "external-build"
+// Git relevant stuff
+#define FCRepositoryHash   "ef05ccf619b9a4398c60e7c3d2e676c8524007c2"
+#define FCRepositoryBranch "external-build"
+// Git relevant stuff
+#define FCRepositoryHash   "4139a54e677032406a61d28cdeccdf7ed07cad89"
+#define FCRepositoryBranch "external-build"
